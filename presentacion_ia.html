@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Sistema IoT Acuícola Inteligente</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --iud: #003DA5;
+    --iud2: #00AEEF;
+    --gold: #F4D03F;
+    --code-bg: #1e1e2e;
+    --green: #2ecc71;
+    --red: #e74c3c;
+  }
+  .reveal { font-family: 'Outfit', sans-serif; font-size: 26px; color: #eee; }
+  .reveal h1 { color: #fff; font-size: 1.6em; font-weight: 800; margin-bottom: 0.2em; line-height: 1.1; }
+  .reveal h2 { color: var(--iud2); font-size: 1.1em; border-bottom: 2px solid rgba(144,202,249,.3); padding-bottom:.1em; margin-bottom: 0.3em; font-weight: 700; }
+  .reveal h3 { color: var(--gold); font-size: 0.8em; font-weight: 600; margin-bottom: 0.2em; }
+  .reveal pre { width: 100%; margin: 0.2em auto; box-shadow: none; background: transparent; }
+  .reveal pre code.hljs { font-size: 0.75em; line-height: 1.4; padding: 8px 12px; background: var(--code-bg) !important; border-radius: 6px; border-left: 3px solid var(--iud2); max-height: 220px; overflow-y: auto !important; overflow-x: auto !important; }
+  .reveal code { color: #A8D8A8; font-family: 'Fira Code', monospace; }
+  .reveal ul li { margin: .1em 0; font-size: 0.75em; color: #ccc; line-height: 1.35; }
+  .reveal ol li { font-size: 0.75em; color: #ccc; line-height: 1.35; }
+  .reveal ul { margin-left: 1.1em; margin-bottom: 0.2em; }
+  .tag { display:inline-block; padding:1px 8px; border-radius:3px; font-size: 0.8em; font-weight:700; margin:0 3px; vertical-align:middle; }
+  .tag-ia   { background:#7D3C98; color:#fff; }
+  .tag-ok   { background:#1E8449; color:#fff; }
+  .tag-warn { background:#B7950B; color:#fff; }
+  .tag-tip  { background:#1A5276; color:#fff; }
+  
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:0.6em; text-align:left; }
+  .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.5em; text-align:left; }
+  .box { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); border-radius:8px; padding:.4em .6em; }
+  .box-blue  { border-left:4px solid var(--iud2); }
+  .box-gold  { border-left:4px solid var(--gold); }
+  .box-green { border-left:4px solid var(--green); }
+  .num { display:inline-block; width:20px; height:20px; line-height:20px; border-radius:50%; background:var(--iud2); color:#000; font-weight:800; font-size: 0.75em; text-align:center; margin-right:4px; }
+  
+  table { font-size: 0.7em; width:100%; border-collapse: collapse; margin: 0.2em 0; }
+  th { background:var(--iud); color:#fff; padding:4px 8px; font-weight: bold; }
+  td { padding:3px 8px; border-bottom:1px solid rgba(255,255,255,.1); vertical-align: middle; }
+  tr:nth-child(even) td { background:rgba(255,255,255,.04); }
+  .sub { font-size: 0.75em; color:#aaa; }
+  
+  .mono{
+    font-family:'Fira Code', monospace; background:rgba(255,255,255,.12);
+    padding:1px 5px; border-radius:3px; font-size: 0.75em; color: #ffd54f;
+  }
+  
+  /* Estructura Pedagógica Implícita (Contexto -> Núcleo -> Reflexión) */
+  .block-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+    width: 100%;
+    margin-top: 0.3em;
+  }
+  
+  .block-context {
+    background: rgba(244, 208, 63, 0.08);
+    border-left: 5px solid var(--gold);
+    border-radius: 6px 6px 0 0;
+    padding: 10px 14px;
+    font-size: 0.75em;
+    text-align: left;
+    line-height: 1.35;
+  }
+  
+  .block-context strong {
+    color: var(--gold);
+  }
+  
+  .block-core {
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 5px solid var(--iud2);
+    border-radius: 0;
+    padding: 12px 14px;
+    font-size: 0.75em;
+    text-align: left;
+    line-height: 1.35;
+  }
+  
+  .block-core strong {
+    color: var(--iud2);
+  }
+  
+  .block-reflection {
+    background: rgba(46, 204, 113, 0.08);
+    border-left: 5px solid var(--green);
+    border-radius: 0 0 6px 6px;
+    padding: 10px 14px;
+    font-size: 0.75em;
+    text-align: left;
+    line-height: 1.35;
+  }
+  
+  .block-reflection strong {
+    color: var(--green);
+  }
+  
+  .sec-slide {
+    display:flex !important; flex-direction:column;
+    justify-content:center; align-items:flex-start; height:100%;
+    text-align: left;
+  }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ========================================== SLIDE 1: PORTADA -->
+<section data-background-gradient="linear-gradient(135deg,#001a4d 0%,#003DA5 60%,#00AEEF 100%)">
+  <div class="sec-slide">
+    <div style="font-size:2.2em;margin-bottom:.2em">🖥️🤖🐟📡</div>
+    <h1>Edge Computing & Inteligencia Artificial</h1>
+    <p style="color:#A8D8A8;font-size: 0.85em;margin:.2em 0 .4em">
+      Procesamiento en el Borde y Modelos Inteligentes en Sistemas IoT
+    </p>
+    <hr style="border-color:rgba(255,255,255,.2); width:100%; margin: 0.4em 0;"/>
+    <p style="color:#aaa;font-size: 0.8em">
+      Tecnologías Emergentes · IU Digital de Antioquia
+    </p>
+    <div style="margin-top:.6em">
+      <span class="badge tag-warn">Edge Computing</span>
+      <span class="badge tag-ia">IA Groq (Llama 3.3 70B)</span>
+      <span class="badge tag-ok">ML Predictivo (scikit-learn)</span>
+    </div>
+    <p style="font-size: 0.75em;color:rgba(255,255,255,0.3);margin-top:0.8em">
+      ← → para navegar · F para pantalla completa
+    </p>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 2: CONCEPTUALIZACIÓN 1.A (EDGE) ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>Concepto 1: Edge Computing (El Borde)</h2>
+  <div class="block-container">
+    <div class="block-context">
+      Los sensores físicos en estanques transmiten lecturas ruidosas cada segundo. Si enviamos millones de datos crudos por red celular 4G o satelital a la nube, colapsamos el ancho de banda y generamos altos costos, además de perder el control de la granja si internet se corta.
+    </div>
+    <div class="block-core">
+      <strong>Edge Computing</strong> es el procesamiento local inmediato de datos en el propio hardware físico (como un chip <strong>ESP32</strong> instalado al borde de la piscina) antes de transmitir nada a la red.
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 3: CONCEPTUALIZACIÓN 1.B (EDGE) ========================================== -->
+<section>
+  <h2>Concepto 1: Edge Computing (Ejemplo y Análisis)</h2>
+  <div class="block-container">
+    <div class="block-core">
+      <ul style="margin-left: 1.1em; font-size: 0.95em; line-height: 1.45;">
+        <li><strong>Ejemplo Práctico (Promedio Móvil):</strong> Si el búfer <code>deque</code> de tamaño 5 recibe <code>[5.0, 5.1, 5.0, <span style="color:#ffcc80">12.5</span>, 4.9]</code>, el promedio es <strong>6.5</strong>. El pico de ruido de 12.5 es "aplastado" localmente, evitando una falsa alarma.</li>
+        <li style="margin-top: 0.3em;"><strong>Ejemplo Práctico (Filtro Delta 5%):</strong> Si el último dato enviado a la nube fue 5.0, el nodo Edge apaga su radio y <strong>solo volverá a transmitir</strong> si la nueva lectura sube de 5.25 o baja de 4.75 (banda muerta).</li>
+        <li style="margin-top: 0.3em;"><strong>Resultado:</strong> En vez de pánico y spam en la red, solo se transmite información útil, reduciendo el tráfico 4G y el consumo de batería satelital en más de un <strong>80%</strong>.</li>
+      </ul>
+    </div>
+    <div class="block-reflection">
+      Si ocurre un corte de luz y se cae la conexión a internet satelital por 4 horas, ¿cómo ayuda el Edge Computing local a que el sistema siga protegiendo la vida de los peces de forma offline?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE: CONCEPTUALIZACIÓN 1.C (EDGE TECH) ========================================== -->
+<section>
+  <h2 style="font-size: 1.3em;">Concepto 1: Edge Computing (Búfer Circular)</h2>
+  <div class="block-container">
+    <div class="block-context">
+      En Edge Computing, dispositivos como el ESP32 tienen muy poca RAM. Guardar cada lectura infinitamente causaría un desbordamiento. Retenemos solo los datos más recientes usando un <strong>Búfer Circular</strong> (Ring Buffer).
+    </div>
+    <div class="block-core">
+      <p style="margin-bottom: 0.3em; font-size: 0.95em;"><strong>Implementación en Python (Ventana Deslizante):</strong></p>
+      <pre style="margin: 0; font-size: 0.85em;"><code class="language-python">from collections import deque
+ventanas = { "oxigeno": deque(maxlen=5) }
+ventanas["oxigeno"].append(oxigeno_crudo)</code></pre>
+      <ul style="margin-left: 1.1em; font-size: 0.9em; line-height: 1.45; margin-top: 0.5em;">
+        <li><strong><code>deque(maxlen=5)</code>:</strong> Estructura optimizada (O(1)) que actúa como un "tubo de 5 pelotas".</li>
+        <li>Al hacer <strong><code>append()</code></strong> de un sexto dato, el más viejo (el del fondo) se elimina automáticamente.</li>
+        <li><strong>Ventaja:</strong> Previene fragmentación de memoria (Out of Memory) y permite promedios locales sin latencia.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 4: CONCEPTUALIZACIÓN 2.A (MODELOS PREDICTIVOS) ========================================== -->
+<section>
+  <h2>Concepto 2: Modelos Predictivos (Machine Learning)</h2>
+  <div class="block-container">
+    <div class="block-context">
+      Los sistemas clásicos operan bajo control reactivo (ej. "si el oxígeno cae por debajo de 3.0, enciende el aireador"). Pero calentar o encender motores toma minutos; para cuando el sensor registra 3.0, el agua ya se quedó sin oxígeno y la mortalidad es inminente.
+    </div>
+    <div class="block-core">
+      Un <strong>modelo predictivo supervisado</strong> es una función matemática ajustada con datos históricos que estima un valor de salida futuro (<strong>Target, y</strong>) a partir de variables de entrada actuales (<strong>Features, x</strong>):
+      <div style="background:rgba(0,0,0,0.3); padding:6px; border-radius:4px; font-family:monospace; margin: 0.3em 0; text-align:center; font-size: 1.15em;">
+        y = f(x) + e
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 5: CONCEPTUALIZACIÓN 2.B (MODELOS PREDICTIVOS) ========================================== -->
+<section>
+  <h2>Concepto 2: Modelos Predictivos (Ejemplo y Análisis)</h2>
+  <div class="block-container">
+    <div class="block-core">
+      <ul style="margin-left: 1.1em; font-size: 0.95em; line-height: 1.45;">
+        <li><strong>Características (Features, x):</strong> Oxígeno actual (3.8 mg/L), Temperatura (28°C), hora del día (18:00).</li>
+        <li><strong>Objetivo (Target, y):</strong> Proyección del oxígeno dentro de 30 minutos (ej. Predice <code>2.7 mg/L</code>).</li>
+        <li style="margin-top: 0.3em;"><strong>Ejemplo Práctico:</strong> Al estimar una caída crítica preventiva a 30 minutos, el sistema enciende el aireador de forma anticipada cuando el nivel real aún está seguro en 3.8 mg/L, evitando la crisis de anoxia.</li>
+      </ul>
+    </div>
+    <div class="block-reflection">
+      ¿Por qué las variables independientes de entrada se llaman "Features" y la variable de salida estimada se llama "Target"? Da un ejemplo de un feature que sea inútil para predecir el oxígeno.
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 6: CONCEPTUALIZACIÓN 3.A (LLMS) ========================================== -->
+<section>
+  <h2>Concepto 3: Modelos de Lenguaje (LLMs)</h2>
+  <div class="block-container">
+    <div class="block-context">
+      Los operarios agrícolas en el campo no son ingenieros de bases de datos. Si el sistema emite códigos de diagnóstico industrial crípticos (ej. `ERR_OXY_DEQUE_FULL_0x23`), la comunicación falla y se se gana tiempo en la emergencia si se habla en lenguaje natural.
+    </div>
+    <div class="block-core">
+      Un <strong>LLM (Large Language Model)</strong> es una red neuronal masiva basada en la arquitectura <em>Transformer</em>, entrenada con inmensos corpus de datos para modelar la probabilidad semántica y responder en lenguaje natural humano.
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 7: CONCEPTUALIZACIÓN 3.B (LLMS) ========================================== -->
+<section>
+  <h2>Concepto 3: Modelos de Lenguaje (Ejemplo y Análisis)</h2>
+  <div class="block-container">
+    <div class="block-core">
+      <ul style="margin-left: 1.1em; font-size: 0.95em; line-height: 1.45;">
+        <li><strong>Ejemplo Práctico:</strong> El operario escribe por Telegram: <em>"¿Por qué se encendieron las alarmas en el estanque A?"</em>. El bot procesa la pregunta, consulta las lecturas en SQLite y responde:</li>
+        <li style="list-style-type: none; background: rgba(0,0,0,0.25); padding: 5px 10px; border-radius: 4px; font-family: monospace; font-size: 0.85em; margin: 0.2em 0; color: var(--iud2);">
+          "El aireador del Estanque A se activó automáticamente porque el modelo predictivo estimó una caída del oxígeno a 2.8 mg/L en 30 minutos debido al aumento de temperatura (29.5°C). Los niveles ya se están recuperando."
+        </li>
+      </ul>
+    </div>
+    <div class="block-reflection">
+      ¿Qué es la "Ventana de Contexto" en un LLM y por qué el chatbot de Telegram debe reenviar todo el historial de la conversación en cada mensaje para simular tener memoria?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 8: CONCEPTUALIZACIÓN 4.A (PARÁMETROS) ========================================== -->
+<section>
+  <h2>Concepto 4: Parámetros (Pesos y Sesgos)</h2>
+  <div class="block-container">
+    <div class="block-context">
+      ¿Cómo adquieren "inteligencia" y "memoria" las redes neuronales y los predictores estadísticos? ¿Qué representan físicamente esos miles de millones de números que almacenan tras entrenarse?
+    </div>
+    <div class="block-core">
+      La memoria y el comportamiento de una IA se almacena en sus <strong>parámetros</strong>, coeficientes numéricos continuos que se ajustan mediante optimización matemática (entrenamiento):
+      <ol style="margin-left: 1.2em; font-size: 0.95em; line-height: 1.45;">
+        <li style="margin-bottom: 0.3em;"><strong>Pesos (<em>w</em> - Weights):</strong> Indican la <strong>fuerza o relevancia</strong> de cada variable de entrada.
+          <br/><em>Ejemplo (Regresión Lineal):</em> <i>y = w &middot; t + b</i>. Si la solubilidad del oxígeno baja cuando el agua se calienta, el peso de la temperatura (<i>t</i>) será negativo alto (<i>w = -0.15</i>).
+        </li>
+        <li><strong>Sesgo (<em>b</em> - Bias):</strong> Representa el valor base o de desviación del modelo cuando todas las entradas valen cero (ej. oxígeno base con agua en reposo total, <i>b = 8.5</i> mg/L).</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 9: CONCEPTUALIZACIÓN 4.B (PARÁMETROS) ========================================== -->
+<section>
+  <h2>Concepto 4: Parámetros (Escala y Análisis)</h2>
+  <div class="block-container">
+    <div class="block-core">
+      <p style="margin: 0; font-size: 1em;"><strong>¿Qué significa la "B" (Billion)?</strong></p>
+      <p style="margin: 0.2em 0 0 0; font-size: 0.95em; line-height: 1.4;">Representa el tamaño del modelo en miles de millones de parámetros. <strong>Llama 3.3 70B</strong> tiene <strong>70 mil millones</strong> de sinapsis matemáticas conectadas para tomar sus decisiones lógicas.</p>
+    </div>
+    <div class="block-reflection">
+      Si iniciamos el modelo con pesos ($w$) y sesgos ($b$) aleatorios, ¿por qué la predicción inicial del oxígeno será absurda y cómo ayuda el error cuadrático a corregir estos valores en el entrenamiento?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 10: TEMARIO -->
+<section>
+  <h2>Estructura del Aprendizaje</h2>
+  <p style="font-size:0.85em;color:#aaa;margin-bottom:0.6em;">Foco exclusivo en las dos tecnologías core de la sesión:</p>
+  <div class="grid2" style="margin-top:.3em">
+    <div class="box box-gold" style="padding:0.8em; border-left: 5px solid var(--gold);">
+      <h3 style="color: var(--gold); font-size:1.15em; margin-bottom:0.3em;">🖥️ Módulo 1: Edge Computing</h3>
+      <ul style="font-size:0.75em; line-height:1.45;">
+        <li>Ventana deslizante asíncrona con <code class="mono">deque(maxlen=5)</code>.</li>
+        <li>Promedio móvil local para suavizar ruido de sensores.</li>
+        <li>Filtro Delta (descarte de lecturas con variación &lt; 5%).</li>
+        <li>Detección inmediata de anomalías (variación relativa &gt; 20%).</li>
+        <li>Payload enriquecido y cálculo de tendencia temporal.</li>
+      </ul>
+    </div>
+    <div class="box box-blue" style="padding:0.8em; border-left: 5px solid #8e44ad;">
+      <h3 style="color: #ce93d8; font-size:1.15em; margin-bottom:0.3em;">🤖 Módulo 2: Inteligencia Artificial</h3>
+      <ul style="font-size:0.75em; line-height:1.45;">
+        <li><strong>ML Predictivo:</strong> Conceptos básicos (regresión vs clasificación) y regresión lineal local con <code class="mono">scikit-learn</code> para proyectar oxígeno y confianza R<sup>2</sup>.</li>
+        <li><strong>IA Conversacional:</strong> Integración de la API de Groq (Llama 3.3 70B) y hardware LPU de altísima velocidad.</li>
+        <li><strong>Prompt Engineering:</strong> System Prompts, RAG local e inyección contextual de datos en SQLite.</li>
+        <li><strong>Blindaje:</strong> Control de alucinaciones y guardrails de seguridad.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 3: ARQUITECTURA INICIAL -->
+<section>
+  <h2>Arquitectura Inicial del Sistema IoT</h2>
+  <svg viewBox="0 0 730 295" style="width:100%;max-height:295px;margin-top:.3em">
+    <defs>
+      <marker id="ah" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0,8 3,0 6" fill="#f29900"/>
+      </marker>
+      <marker id="as" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+        <polygon points="0 0,7 2.5,0 5" fill="rgba(255,255,255,.4)"/>
+      </marker>
+    </defs>
+    <!-- Flechas pipeline principal -->
+    <line x1="118" y1="90" x2="168" y2="90" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <line x1="296" y1="82" x2="338" y2="82" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <line x1="456" y1="90" x2="500" y2="90" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- Broker → Dashboard/Chatbot (dashed) -->
+    <line x1="207" y1="145" x2="120" y2="195" stroke="#ce93d8" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <line x1="207" y1="148" x2="120" y2="250" stroke="#80cbc4" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <!-- nodoCentral → baseDatos / actuadores (dashed) -->
+    <line x1="565" y1="130" x2="530" y2="200" stroke="#4dd0e1" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <line x1="575" y1="130" x2="645" y2="200" stroke="#a5d6a7" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <!-- cajas -->
+    <!-- miSensor -->
+    <rect x="8"   y="65"  width="110" height="55" rx="7" fill="rgba(46,125,50,.3)"   stroke="#2e7d32" stroke-width="1.5"/>
+    <text x="63"  y="86"  text-anchor="middle" fill="#a5d6a7" font-size="11.5" font-family="sans-serif" font-weight="bold">miSensor.py</text>
+    <text x="63"  y="101" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">3 estanques</text>
+    <text x="63"  y="113" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">sensores/estanque_a</text>
+    <!-- Broker -->
+    <rect x="168" y="48"  width="128" height="105" rx="7" fill="rgba(21,101,192,.3)"  stroke="#1565c0" stroke-width="2"/>
+    <text x="232" y="75"  text-anchor="middle" fill="#90caf9" font-size="12" font-family="sans-serif" font-weight="bold">Mosquitto</text>
+    <text x="232" y="90"  text-anchor="middle" fill="#90caf9" font-size="11" font-family="sans-serif">Broker MQTT</text>
+    <text x="232" y="105" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">localhost:1883</text>
+    <text x="232" y="118" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">hub pub/sub</text>
+    <text x="232" y="130" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">único punto de contacto</text>
+    <!-- nodoEdge -->
+    <rect x="338" y="60"  width="118" height="58" rx="7" fill="rgba(230,81,0,.3)"    stroke="#e65100" stroke-width="1.5"/>
+    <text x="397" y="80"  text-anchor="middle" fill="#ffcc80" font-size="11.5" font-family="sans-serif" font-weight="bold">nodoEdge</text>
+    <text x="397" y="95"  text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">filtro Δ · promedio</text>
+    <text x="397" y="109" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">procesado/estanque_a</text>
+    <!-- nodoCentral -->
+    <rect x="500" y="58"  width="130" height="72" rx="7" fill="rgba(198,40,40,.3)"   stroke="#c62828" stroke-width="1.5"/>
+    <text x="565" y="80"  text-anchor="middle" fill="#ef9a9a" font-size="11.5" font-family="sans-serif" font-weight="bold">nodoCentral</text>
+    <text x="565" y="95"  text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">reglas OD/temp/pH</text>
+    <text x="565" y="110" text-anchor="middle" fill="#888" font-size="9" font-family="sans-serif">histéresis · alertas</text>
+    <text x="565" y="122" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">actuadores/estanque_a/splash</text>
+    <!-- Dashboard -->
+    <rect x="8"   y="195" width="120" height="46" rx="7" fill="rgba(106,27,154,.3)"  stroke="#6a1b9a" stroke-width="1.5"/>
+    <text x="68"  y="214" text-anchor="middle" fill="#ce93d8" font-size="11.5" font-family="sans-serif" font-weight="bold">Dashboard</text>
+    <text x="68"  y="230" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">Streamlit :8501</text>
+    <!-- Chatbot -->
+    <rect x="8"   y="252" width="120" height="46" rx="7" fill="rgba(0,105,92,.3)"    stroke="#00695c" stroke-width="1.5"/>
+    <text x="68"  y="271" text-anchor="middle" fill="#80cbc4" font-size="11.5" font-family="sans-serif" font-weight="bold">Chatbot</text>
+    <text x="68"  y="287" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">Telegram bot</text>
+    <!-- baseDatos -->
+    <rect x="470" y="200" width="130" height="46" rx="7" fill="rgba(0,131,143,.3)"   stroke="#00838f" stroke-width="1.5"/>
+    <text x="535" y="219" text-anchor="middle" fill="#4dd0e1" font-size="11.5" font-family="sans-serif" font-weight="bold">baseDatos</text>
+    <text x="535" y="235" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">SQLite acuicola.db</text>
+    <!-- actuadores -->
+    <rect x="610" y="200" width="118" height="46" rx="7" fill="rgba(27,94,32,.3)"    stroke="#1b5e20" stroke-width="1.5"/>
+    <text x="669" y="219" text-anchor="middle" fill="#a5d6a7" font-size="11.5" font-family="sans-serif" font-weight="bold">Actuadores</text>
+    <text x="669" y="235" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">splash · alarmas</text>
+    <!-- leyenda -->
+    <line x1="310" y1="278" x2="340" y2="278" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="345" y="282" fill="#aaa" font-size="9" font-family="sans-serif">flujo MQTT (pub)</text>
+    <line x1="430" y1="278" x2="460" y2="278" stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <text x="465" y="282" fill="#aaa" font-size="9" font-family="sans-serif">sub / llamada directa</text>
+  </svg>
+</section>
+
+<!-- ========================================== SLIDE 4: ARQUITECTURA AVANZADA -->
+<section>
+  <h2>Arquitectura Avanzada con Inteligencia Artificial</h2>
+  <svg viewBox="0 0 730 335" style="width:100%;max-height:335px;margin-top:.3em">
+    <defs>
+      <marker id="ah" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0,8 3,0 6" fill="#f29900"/>
+      </marker>
+      <marker id="as" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+        <polygon points="0 0,7 2.5,0 5" fill="rgba(255,255,255,.4)"/>
+      </marker>
+    </defs>
+    <!-- Flechas pipeline principal -->
+    <line x1="118" y1="90" x2="168" y2="90" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <line x1="296" y1="82" x2="338" y2="82" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <line x1="456" y1="90" x2="500" y2="90" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- Broker → Dashboard/Chatbot (dashed) -->
+    <line x1="207" y1="145" x2="120" y2="195" stroke="#ce93d8" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <line x1="207" y1="148" x2="120" y2="250" stroke="#80cbc4" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <!-- nodoCentral → baseDatos / actuadores (dashed) -->
+    <line x1="565" y1="130" x2="530" y2="200" stroke="#4dd0e1" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <line x1="575" y1="130" x2="645" y2="200" stroke="#a5d6a7" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <!-- cajas -->
+    <!-- miSensor -->
+    <rect x="8"   y="65"  width="110" height="55" rx="7" fill="rgba(46,125,50,.3)"   stroke="#2e7d32" stroke-width="1.5"/>
+    <text x="63"  y="86"  text-anchor="middle" fill="#a5d6a7" font-size="11.5" font-family="sans-serif" font-weight="bold">miSensor.py</text>
+    <text x="63"  y="101" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">3 estanques</text>
+    <text x="63"  y="113" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">sensores/estanque_a</text>
+    <!-- Broker -->
+    <rect x="168" y="48"  width="128" height="105" rx="7" fill="rgba(21,101,192,.3)"  stroke="#1565c0" stroke-width="2"/>
+    <text x="232" y="75"  text-anchor="middle" fill="#90caf9" font-size="12" font-family="sans-serif" font-weight="bold">Mosquitto</text>
+    <text x="232" y="90"  text-anchor="middle" fill="#90caf9" font-size="11" font-family="sans-serif">Broker MQTT</text>
+    <text x="232" y="105" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">localhost:1883</text>
+    <text x="232" y="118" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">hub pub/sub</text>
+    <text x="232" y="130" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">único punto de contacto</text>
+    <!-- nodoEdge -->
+    <rect x="338" y="60"  width="118" height="58" rx="7" fill="rgba(230,81,0,.3)"    stroke="#e65100" stroke-width="1.5"/>
+    <text x="397" y="80"  text-anchor="middle" fill="#ffcc80" font-size="11.5" font-family="sans-serif" font-weight="bold">nodoEdge</text>
+    <text x="397" y="95"  text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">filtro Δ · promedio</text>
+    <text x="397" y="109" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">procesado/estanque_a</text>
+    <!-- nodoCentral -->
+    <rect x="500" y="58"  width="130" height="72" rx="7" fill="rgba(198,40,40,.3)"   stroke="#c62828" stroke-width="1.5"/>
+    <text x="565" y="80"  text-anchor="middle" fill="#ef9a9a" font-size="11.5" font-family="sans-serif" font-weight="bold">nodoCentral</text>
+    <text x="565" y="95"  text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">reglas OD/temp/pH</text>
+    <text x="565" y="110" text-anchor="middle" fill="#888" font-size="9" font-family="sans-serif">histéresis · alertas</text>
+    <text x="565" y="122" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">actuadores/estanque_a/splash</text>
+    <!-- Dashboard -->
+    <rect x="8"   y="195" width="120" height="46" rx="7" fill="rgba(106,27,154,.3)"  stroke="#6a1b9a" stroke-width="1.5"/>
+    <text x="68"  y="214" text-anchor="middle" fill="#ce93d8" font-size="11.5" font-family="sans-serif" font-weight="bold">Dashboard</text>
+    <text x="68"  y="230" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">Streamlit :8501</text>
+    
+    <!-- Chatbot -->
+    <rect x="8"   y="252" width="120" height="46" rx="7" fill="rgba(0,105,92,.3)"    stroke="#00695c" stroke-width="1.5"/>
+    <text x="68"  y="271" text-anchor="middle" fill="#80cbc4" font-size="11.5" font-family="sans-serif" font-weight="bold">Chatbot</text>
+    <text x="68"  y="287" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">Telegram bot</text>
+
+    <!-- Conexiones Chatbot → IA Subcomponents (bordeando sin atravesar recuadros) -->
+    <line x1="128" y1="275" x2="168" y2="275" stroke="#ce93d8" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#as)"/>
+    <path d="M 68,298 L 68,308 L 392,308 L 392,302" fill="none" stroke="#ce93d8" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#as)"/>
+
+    <!-- iaChatGroq.py (IA Conversacional) -->
+    <rect x="175"  y="252" width="135" height="46" rx="7" fill="rgba(125,60,152,.2)"  stroke="#7d3c98" stroke-width="1.5"/>
+    <text x="242"  y="271" text-anchor="middle" fill="#ce93d8" font-size="11.5" font-family="sans-serif" font-weight="bold">iaChatGroq.py</text>
+    <text x="242"  y="287" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">Groq Llama 3.3</text>
+
+    <!-- iaPredictor.py (ML Predictivo) -->
+    <rect x="325"  y="252" width="135" height="46" rx="7" fill="rgba(156,92,254,.15)" stroke="#8e44ad" stroke-width="1.5"/>
+    <text x="392"  y="271" text-anchor="middle" fill="#ce93d8" font-size="11.5" font-family="sans-serif" font-weight="bold">iaPredictor.py</text>
+    <text x="392"  y="287" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">scikit-learn ML</text>
+
+    <!-- Conexiones IA → baseDatos (bordeando sin atravesar recuadros) -->
+    <path d="M 242,252 L 242,175 L 535,175 L 535,195" fill="none" stroke="#4dd0e1" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#as)"/>
+    <path d="M 392,252 L 392,223 L 464,223" fill="none" stroke="#4dd0e1" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#as)"/>
+
+    <!-- baseDatos -->
+    <rect x="470" y="200" width="130" height="46" rx="7" fill="rgba(0,131,143,.3)"   stroke="#00838f" stroke-width="1.5"/>
+    <text x="535" y="219" text-anchor="middle" fill="#4dd0e1" font-size="11.5" font-family="sans-serif" font-weight="bold">baseDatos</text>
+    <text x="535" y="235" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">SQLite acuicola.db</text>
+    <!-- actuadores -->
+    <rect x="610" y="200" width="118" height="46" rx="7" fill="rgba(27,94,32,.3)"    stroke="#1b5e20" stroke-width="1.5"/>
+    <text x="669" y="219" text-anchor="middle" fill="#a5d6a7" font-size="11.5" font-family="sans-serif" font-weight="bold">Actuadores</text>
+    <text x="669" y="235" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">splash · alarmas</text>
+    <!-- leyenda -->
+    <line x1="280" y1="315" x2="310" y2="315" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="315" y="319" fill="#aaa" font-size="9.5" font-family="sans-serif">flujo MQTT (pub)</text>
+    <line x1="440" y1="315" x2="470" y2="315" stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <text x="475" y="319" fill="#aaa" font-size="9.5" font-family="sans-serif">sub / lectura directa / consulta BD</text>
+  </svg>
+</section>
+
+<!-- ========================================== SECCIÓN 1: EDGE COMPUTING -->
+<section data-background-color="#001830">
+  <h1 style="color:var(--gold)">🖥️ Módulo 1</h1>
+  <p>Edge Computing en el Borde y Lógica de Procesamiento Local</p>
+</section>
+
+<!-- ========================================== CONCEPTO 1.1 ========================================== -->
+<section>
+  <h2>1.1 Suavizado de Ruido: Ventana Deslizante</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Los sensores físicos en estanques acuícolas sufren de picos eléctricos erráticos y ruido que generan falsas alarmas. ¿Cómo podemos amortiguar y capturar una serie temporal estable del estanque?
+    </div>
+    <div class="block-core">
+      
+      Almacenamos un búfer circular de tamaño <strong>N=5</strong> en memoria RAM local mediante la estructura optimizada y thread-safe de Python <code class="mono">collections.deque(maxlen=5)</code>. Al inyectar el sexto elemento, el primero se descarta de forma automática.
+      <pre style="margin: 0.1em 0;"><code class="language-python">from collections import deque
+ventanas = {"oxigeno": deque(maxlen=5), "temperatura": deque(maxlen=5)}
+ventanas["oxigeno"].append(oxigeno_crudo)</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>Concepto 1: Edge Computing (El Borde)</h2>
+  <div class="block-container">
+    <div class="block-context">
+      Los sensores físicos en estanques transmiten lecturas ruidosas cada segundo. Si enviamos millones de datos crudos por red celular 4G o satelital a la nube, colapsamos el ancho de banda y generamos altos costos, además de perder el control de la granja si internet se corta.
+    </div>
+    <div class="block-core">
+      <strong>Edge Computing</strong> es el procesamiento local inmediato de datos en el propio hardware físico (como un chip <strong>ESP32</strong> instalado al borde de la piscina) antes de transmitir nada a la red.
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 3: CONCEPTUALIZACIÓN 1.B (EDGE) ========================================== -->
+<section>
+  <h2>Concepto 1: Edge Computing (Ejemplo y Análisis)</h2>
+  <div class="block-container">
+    <div class="block-core">
+      <ul style="margin-left: 1.1em; font-size: 0.95em; line-height: 1.45;">
+        <li><strong>Ejemplo Práctico (Promedio Móvil):</strong> Si el búfer <code>deque</code> de tamaño 5 recibe <code>[5.0, 5.1, 5.0, <span style="color:#ffcc80">12.5</span>, 4.9]</code>, el promedio es <strong>6.5</strong>. El pico de ruido de 12.5 es "aplastado" localmente, evitando una falsa alarma.</li>
+        <li style="margin-top: 0.3em;"><strong>Ejemplo Práctico (Filtro Delta 5%):</strong> Si el último dato enviado a la nube fue 5.0, el nodo Edge apaga su radio y <strong>solo volverá a transmitir</strong> si la nueva lectura sube de 5.25 o baja de 4.75 (banda muerta).</li>
+        <li style="margin-top: 0.3em;"><strong>Resultado:</strong> En vez de pánico y spam en la red, solo se transmite información útil, reduciendo el tráfico 4G y el consumo de batería satelital en más de un <strong>80%</strong>.</li>
+      </ul>
+    </div>
+    <div class="block-reflection">
+      Si ocurre un corte de luz y se cae la conexión a internet satelital por 4 horas, ¿cómo ayuda el Edge Computing local a que el sistema siga protegiendo la vida de los peces de forma offline?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE: CONCEPTUALIZACIÓN 1.C (EDGE TECH) ========================================== -->
+<section>
+  <h2 style="font-size: 1.3em;">Concepto 1: Edge Computing (Búfer Circular)</h2>
+  <div class="block-container">
+    <div class="block-context">
+      En Edge Computing, dispositivos como el ESP32 tienen muy poca RAM. Guardar cada lectura infinitamente causaría un desbordamiento. Retenemos solo los datos más recientes usando un <strong>Búfer Circular</strong> (Ring Buffer).
+    </div>
+    <div class="block-core">
+      <p style="margin-bottom: 0.3em; font-size: 0.95em;"><strong>Implementación en Python (Ventana Deslizante):</strong></p>
+      <pre style="margin: 0; font-size: 0.85em;"><code class="language-python">from collections import deque
+ventanas = { "oxigeno": deque(maxlen=5) }
+ventanas["oxigeno"].append(oxigeno_crudo)</code></pre>
+      <ul style="margin-left: 1.1em; font-size: 0.9em; line-height: 1.45; margin-top: 0.5em;">
+        <li><strong><code>deque(maxlen=5)</code>:</strong> Estructura optimizada (O(1)) que actúa como un "tubo de 5 pelotas".</li>
+        <li>Al hacer <strong><code>append()</code></strong> de un sexto dato, el más viejo (el del fondo) se elimina automáticamente.</li>
+        <li><strong>Ventaja:</strong> Previene fragmentación de memoria (Out of Memory) y permite promedios locales sin latencia.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 4: CONCEPTUALIZACIÓN 2.A (MODELOS PREDICTIVOS) ========================================== -->
+<section>
+  <h2>Concepto 2: Modelos Predictivos (Machine Learning)</h2>
+  <div class="block-container">
+    <div class="block-context">
+      Los sistemas clásicos operan bajo control reactivo (ej. "si el oxígeno cae por debajo de 3.0, enciende el aireador"). Pero calentar o encender motores toma minutos; para cuando el sensor registra 3.0, el agua ya se quedó sin oxígeno y la mortalidad es inminente.
+    </div>
+    <div class="block-core">
+      Un <strong>modelo predictivo supervisado</strong> es una función matemática ajustada con datos históricos que estima un valor de salida futuro (<strong>Target, y</strong>) a partir de variables de entrada actuales (<strong>Features, x</strong>):
+      <div style="background:rgba(0,0,0,0.3); padding:6px; border-radius:4px; font-family:monospace; margin: 0.3em 0; text-align:center; font-size: 1.15em;">
+        y = f(x) + e
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 5: CONCEPTUALIZACIÓN 2.B (MODELOS PREDICTIVOS) ========================================== -->
+<section>
+  <h2>Concepto 2: Modelos Predictivos (Ejemplo y Análisis)</h2>
+  <div class="block-container">
+    <div class="block-core">
+      <ul style="margin-left: 1.1em; font-size: 0.95em; line-height: 1.45;">
+        <li><strong>Características (Features, x):</strong> Oxígeno actual (3.8 mg/L), Temperatura (28°C), hora del día (18:00).</li>
+        <li><strong>Objetivo (Target, y):</strong> Proyección del oxígeno dentro de 30 minutos (ej. Predice <code>2.7 mg/L</code>).</li>
+        <li style="margin-top: 0.3em;"><strong>Ejemplo Práctico:</strong> Al estimar una caída crítica preventiva a 30 minutos, el sistema enciende el aireador de forma anticipada cuando el nivel real aún está seguro en 3.8 mg/L, evitando la crisis de anoxia.</li>
+      </ul>
+    </div>
+    <div class="block-reflection">
+      ¿Por qué las variables independientes de entrada se llaman "Features" y la variable de salida estimada se llama "Target"? Da un ejemplo de un feature que sea inútil para predecir el oxígeno.
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 6: CONCEPTUALIZACIÓN 3.A (LLMS) ========================================== -->
+<section>
+  <h2>Concepto 3: Modelos de Lenguaje (LLMs)</h2>
+  <div class="block-container">
+    <div class="block-context">
+      Los operarios agrícolas en el campo no son ingenieros de bases de datos. Si el sistema emite códigos de diagnóstico industrial crípticos (ej. `ERR_OXY_DEQUE_FULL_0x23`), la comunicación falla y se se gana tiempo en la emergencia si se habla en lenguaje natural.
+    </div>
+    <div class="block-core">
+      Un <strong>LLM (Large Language Model)</strong> es una red neuronal masiva basada en la arquitectura <em>Transformer</em>, entrenada con inmensos corpus de datos para modelar la probabilidad semántica y responder en lenguaje natural humano.
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 7: CONCEPTUALIZACIÓN 3.B (LLMS) ========================================== -->
+<section>
+  <h2>Concepto 3: Modelos de Lenguaje (Ejemplo y Análisis)</h2>
+  <div class="block-container">
+    <div class="block-core">
+      <ul style="margin-left: 1.1em; font-size: 0.95em; line-height: 1.45;">
+        <li><strong>Ejemplo Práctico:</strong> El operario escribe por Telegram: <em>"¿Por qué se encendieron las alarmas en el estanque A?"</em>. El bot procesa la pregunta, consulta las lecturas en SQLite y responde:</li>
+        <li style="list-style-type: none; background: rgba(0,0,0,0.25); padding: 5px 10px; border-radius: 4px; font-family: monospace; font-size: 0.85em; margin: 0.2em 0; color: var(--iud2);">
+          "El aireador del Estanque A se activó automáticamente porque el modelo predictivo estimó una caída del oxígeno a 2.8 mg/L en 30 minutos debido al aumento de temperatura (29.5°C). Los niveles ya se están recuperando."
+        </li>
+      </ul>
+    </div>
+    <div class="block-reflection">
+      ¿Qué es la "Ventana de Contexto" en un LLM y por qué el chatbot de Telegram debe reenviar todo el historial de la conversación en cada mensaje para simular tener memoria?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 8: CONCEPTUALIZACIÓN 4.A (PARÁMETROS) ========================================== -->
+<section>
+  <h2>Concepto 4: Parámetros (Pesos y Sesgos)</h2>
+  <div class="block-container">
+    <div class="block-context">
+      ¿Cómo adquieren "inteligencia" y "memoria" las redes neuronales y los predictores estadísticos? ¿Qué representan físicamente esos miles de millones de números que almacenan tras entrenarse?
+    </div>
+    <div class="block-core">
+      La memoria y el comportamiento de una IA se almacena en sus <strong>parámetros</strong>, coeficientes numéricos continuos que se ajustan mediante optimización matemática (entrenamiento):
+      <ol style="margin-left: 1.2em; font-size: 0.95em; line-height: 1.45;">
+        <li style="margin-bottom: 0.3em;"><strong>Pesos (<em>w</em> - Weights):</strong> Indican la <strong>fuerza o relevancia</strong> de cada variable de entrada.
+          <br/><em>Ejemplo (Regresión Lineal):</em> <i>y = w &middot; t + b</i>. Si la solubilidad del oxígeno baja cuando el agua se calienta, el peso de la temperatura (<i>t</i>) será negativo alto (<i>w = -0.15</i>).
+        </li>
+        <li><strong>Sesgo (<em>b</em> - Bias):</strong> Representa el valor base o de desviación del modelo cuando todas las entradas valen cero (ej. oxígeno base con agua en reposo total, <i>b = 8.5</i> mg/L).</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 9: CONCEPTUALIZACIÓN 4.B (PARÁMETROS) ========================================== -->
+<section>
+  <h2>Concepto 4: Parámetros (Escala y Análisis)</h2>
+  <div class="block-container">
+    <div class="block-core">
+      <p style="margin: 0; font-size: 1em;"><strong>¿Qué significa la "B" (Billion)?</strong></p>
+      <p style="margin: 0.2em 0 0 0; font-size: 0.95em; line-height: 1.4;">Representa el tamaño del modelo en miles de millones de parámetros. <strong>Llama 3.3 70B</strong> tiene <strong>70 mil millones</strong> de sinapsis matemáticas conectadas para tomar sus decisiones lógicas.</p>
+    </div>
+    <div class="block-reflection">
+      Si iniciamos el modelo con pesos ($w$) y sesgos ($b$) aleatorios, ¿por qué la predicción inicial del oxígeno será absurda y cómo ayuda el error cuadrático a corregir estos valores en el entrenamiento?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 10: TEMARIO -->
+<section>
+  <h2>Estructura del Aprendizaje</h2>
+  <p style="font-size:0.85em;color:#aaa;margin-bottom:0.6em;">Foco exclusivo en las dos tecnologías core de la sesión:</p>
+  <div class="grid2" style="margin-top:.3em">
+    <div class="box box-gold" style="padding:0.8em; border-left: 5px solid var(--gold);">
+      <h3 style="color: var(--gold); font-size:1.15em; margin-bottom:0.3em;">🖥️ Módulo 1: Edge Computing</h3>
+      <ul style="font-size:0.75em; line-height:1.45;">
+        <li>Ventana deslizante asíncrona con <code class="mono">deque(maxlen=5)</code>.</li>
+        <li>Promedio móvil local para suavizar ruido de sensores.</li>
+        <li>Filtro Delta (descarte de lecturas con variación &lt; 5%).</li>
+        <li>Detección inmediata de anomalías (variación relativa &gt; 20%).</li>
+        <li>Payload enriquecido y cálculo de tendencia temporal.</li>
+      </ul>
+    </div>
+    <div class="box box-blue" style="padding:0.8em; border-left: 5px solid #8e44ad;">
+      <h3 style="color: #ce93d8; font-size:1.15em; margin-bottom:0.3em;">🤖 Módulo 2: Inteligencia Artificial</h3>
+      <ul style="font-size:0.75em; line-height:1.45;">
+        <li><strong>ML Predictivo:</strong> Conceptos básicos (regresión vs clasificación) y regresión lineal local con <code class="mono">scikit-learn</code> para proyectar oxígeno y confianza R<sup>2</sup>.</li>
+        <li><strong>IA Conversacional:</strong> Integración de la API de Groq (Llama 3.3 70B) y hardware LPU de altísima velocidad.</li>
+        <li><strong>Prompt Engineering:</strong> System Prompts, RAG local e inyección contextual de datos en SQLite.</li>
+        <li><strong>Blindaje:</strong> Control de alucinaciones y guardrails de seguridad.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE 3: ARQUITECTURA INICIAL -->
+<section>
+  <h2>Arquitectura Inicial del Sistema IoT</h2>
+  <svg viewBox="0 0 730 295" style="width:100%;max-height:295px;margin-top:.3em">
+    <defs>
+      <marker id="ah" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0,8 3,0 6" fill="#f29900"/>
+      </marker>
+      <marker id="as" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+        <polygon points="0 0,7 2.5,0 5" fill="rgba(255,255,255,.4)"/>
+      </marker>
+    </defs>
+    <!-- Flechas pipeline principal -->
+    <line x1="118" y1="90" x2="168" y2="90" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <line x1="296" y1="82" x2="338" y2="82" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <line x1="456" y1="90" x2="500" y2="90" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- Broker → Dashboard/Chatbot (dashed) -->
+    <line x1="207" y1="145" x2="120" y2="195" stroke="#ce93d8" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <line x1="207" y1="148" x2="120" y2="250" stroke="#80cbc4" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <!-- nodoCentral → baseDatos / actuadores (dashed) -->
+    <line x1="565" y1="130" x2="530" y2="200" stroke="#4dd0e1" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <line x1="575" y1="130" x2="645" y2="200" stroke="#a5d6a7" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <!-- cajas -->
+    <!-- miSensor -->
+    <rect x="8"   y="65"  width="110" height="55" rx="7" fill="rgba(46,125,50,.3)"   stroke="#2e7d32" stroke-width="1.5"/>
+    <text x="63"  y="86"  text-anchor="middle" fill="#a5d6a7" font-size="11.5" font-family="sans-serif" font-weight="bold">miSensor.py</text>
+    <text x="63"  y="101" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">3 estanques</text>
+    <text x="63"  y="113" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">sensores/estanque_a</text>
+    <!-- Broker -->
+    <rect x="168" y="48"  width="128" height="105" rx="7" fill="rgba(21,101,192,.3)"  stroke="#1565c0" stroke-width="2"/>
+    <text x="232" y="75"  text-anchor="middle" fill="#90caf9" font-size="12" font-family="sans-serif" font-weight="bold">Mosquitto</text>
+    <text x="232" y="90"  text-anchor="middle" fill="#90caf9" font-size="11" font-family="sans-serif">Broker MQTT</text>
+    <text x="232" y="105" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">localhost:1883</text>
+    <text x="232" y="118" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">hub pub/sub</text>
+    <text x="232" y="130" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">único punto de contacto</text>
+    <!-- nodoEdge -->
+    <rect x="338" y="60"  width="118" height="58" rx="7" fill="rgba(230,81,0,.3)"    stroke="#e65100" stroke-width="1.5"/>
+    <text x="397" y="80"  text-anchor="middle" fill="#ffcc80" font-size="11.5" font-family="sans-serif" font-weight="bold">nodoEdge</text>
+    <text x="397" y="95"  text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">filtro Δ · promedio</text>
+    <text x="397" y="109" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">procesado/estanque_a</text>
+    <!-- nodoCentral -->
+    <rect x="500" y="58"  width="130" height="72" rx="7" fill="rgba(198,40,40,.3)"   stroke="#c62828" stroke-width="1.5"/>
+    <text x="565" y="80"  text-anchor="middle" fill="#ef9a9a" font-size="11.5" font-family="sans-serif" font-weight="bold">nodoCentral</text>
+    <text x="565" y="95"  text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">reglas OD/temp/pH</text>
+    <text x="565" y="110" text-anchor="middle" fill="#888" font-size="9" font-family="sans-serif">histéresis · alertas</text>
+    <text x="565" y="122" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">actuadores/estanque_a/splash</text>
+    <!-- Dashboard -->
+    <rect x="8"   y="195" width="120" height="46" rx="7" fill="rgba(106,27,154,.3)"  stroke="#6a1b9a" stroke-width="1.5"/>
+    <text x="68"  y="214" text-anchor="middle" fill="#ce93d8" font-size="11.5" font-family="sans-serif" font-weight="bold">Dashboard</text>
+    <text x="68"  y="230" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">Streamlit :8501</text>
+    <!-- Chatbot -->
+    <rect x="8"   y="252" width="120" height="46" rx="7" fill="rgba(0,105,92,.3)"    stroke="#00695c" stroke-width="1.5"/>
+    <text x="68"  y="271" text-anchor="middle" fill="#80cbc4" font-size="11.5" font-family="sans-serif" font-weight="bold">Chatbot</text>
+    <text x="68"  y="287" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">Telegram bot</text>
+    <!-- baseDatos -->
+    <rect x="470" y="200" width="130" height="46" rx="7" fill="rgba(0,131,143,.3)"   stroke="#00838f" stroke-width="1.5"/>
+    <text x="535" y="219" text-anchor="middle" fill="#4dd0e1" font-size="11.5" font-family="sans-serif" font-weight="bold">baseDatos</text>
+    <text x="535" y="235" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">SQLite acuicola.db</text>
+    <!-- actuadores -->
+    <rect x="610" y="200" width="118" height="46" rx="7" fill="rgba(27,94,32,.3)"    stroke="#1b5e20" stroke-width="1.5"/>
+    <text x="669" y="219" text-anchor="middle" fill="#a5d6a7" font-size="11.5" font-family="sans-serif" font-weight="bold">Actuadores</text>
+    <text x="669" y="235" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">splash · alarmas</text>
+    <!-- leyenda -->
+    <line x1="310" y1="278" x2="340" y2="278" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="345" y="282" fill="#aaa" font-size="9" font-family="sans-serif">flujo MQTT (pub)</text>
+    <line x1="430" y1="278" x2="460" y2="278" stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <text x="465" y="282" fill="#aaa" font-size="9" font-family="sans-serif">sub / llamada directa</text>
+  </svg>
+</section>
+
+<!-- ========================================== SLIDE 4: ARQUITECTURA AVANZADA -->
+<section>
+  <h2>Arquitectura Avanzada con Inteligencia Artificial</h2>
+  <svg viewBox="0 0 730 335" style="width:100%;max-height:335px;margin-top:.3em">
+    <defs>
+      <marker id="ah" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0,8 3,0 6" fill="#f29900"/>
+      </marker>
+      <marker id="as" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+        <polygon points="0 0,7 2.5,0 5" fill="rgba(255,255,255,.4)"/>
+      </marker>
+    </defs>
+    <!-- Flechas pipeline principal -->
+    <line x1="118" y1="90" x2="168" y2="90" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <line x1="296" y1="82" x2="338" y2="82" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <line x1="456" y1="90" x2="500" y2="90" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- Broker → Dashboard/Chatbot (dashed) -->
+    <line x1="207" y1="145" x2="120" y2="195" stroke="#ce93d8" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <line x1="207" y1="148" x2="120" y2="250" stroke="#80cbc4" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <!-- nodoCentral → baseDatos / actuadores (dashed) -->
+    <line x1="565" y1="130" x2="530" y2="200" stroke="#4dd0e1" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <line x1="575" y1="130" x2="645" y2="200" stroke="#a5d6a7" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <!-- cajas -->
+    <!-- miSensor -->
+    <rect x="8"   y="65"  width="110" height="55" rx="7" fill="rgba(46,125,50,.3)"   stroke="#2e7d32" stroke-width="1.5"/>
+    <text x="63"  y="86"  text-anchor="middle" fill="#a5d6a7" font-size="11.5" font-family="sans-serif" font-weight="bold">miSensor.py</text>
+    <text x="63"  y="101" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">3 estanques</text>
+    <text x="63"  y="113" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">sensores/estanque_a</text>
+    <!-- Broker -->
+    <rect x="168" y="48"  width="128" height="105" rx="7" fill="rgba(21,101,192,.3)"  stroke="#1565c0" stroke-width="2"/>
+    <text x="232" y="75"  text-anchor="middle" fill="#90caf9" font-size="12" font-family="sans-serif" font-weight="bold">Mosquitto</text>
+    <text x="232" y="90"  text-anchor="middle" fill="#90caf9" font-size="11" font-family="sans-serif">Broker MQTT</text>
+    <text x="232" y="105" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">localhost:1883</text>
+    <text x="232" y="118" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">hub pub/sub</text>
+    <text x="232" y="130" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">único punto de contacto</text>
+    <!-- nodoEdge -->
+    <rect x="338" y="60"  width="118" height="58" rx="7" fill="rgba(230,81,0,.3)"    stroke="#e65100" stroke-width="1.5"/>
+    <text x="397" y="80"  text-anchor="middle" fill="#ffcc80" font-size="11.5" font-family="sans-serif" font-weight="bold">nodoEdge</text>
+    <text x="397" y="95"  text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">filtro Δ · promedio</text>
+    <text x="397" y="109" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">procesado/estanque_a</text>
+    <!-- nodoCentral -->
+    <rect x="500" y="58"  width="130" height="72" rx="7" fill="rgba(198,40,40,.3)"   stroke="#c62828" stroke-width="1.5"/>
+    <text x="565" y="80"  text-anchor="middle" fill="#ef9a9a" font-size="11.5" font-family="sans-serif" font-weight="bold">nodoCentral</text>
+    <text x="565" y="95"  text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">reglas OD/temp/pH</text>
+    <text x="565" y="110" text-anchor="middle" fill="#888" font-size="9" font-family="sans-serif">histéresis · alertas</text>
+    <text x="565" y="122" text-anchor="middle" fill="#666" font-size="8.5" font-family="sans-serif">actuadores/estanque_a/splash</text>
+    <!-- Dashboard -->
+    <rect x="8"   y="195" width="120" height="46" rx="7" fill="rgba(106,27,154,.3)"  stroke="#6a1b9a" stroke-width="1.5"/>
+    <text x="68"  y="214" text-anchor="middle" fill="#ce93d8" font-size="11.5" font-family="sans-serif" font-weight="bold">Dashboard</text>
+    <text x="68"  y="230" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">Streamlit :8501</text>
+    
+    <!-- Chatbot -->
+    <rect x="8"   y="252" width="120" height="46" rx="7" fill="rgba(0,105,92,.3)"    stroke="#00695c" stroke-width="1.5"/>
+    <text x="68"  y="271" text-anchor="middle" fill="#80cbc4" font-size="11.5" font-family="sans-serif" font-weight="bold">Chatbot</text>
+    <text x="68"  y="287" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">Telegram bot</text>
+
+    <!-- Conexiones Chatbot → IA Subcomponents (bordeando sin atravesar recuadros) -->
+    <line x1="128" y1="275" x2="168" y2="275" stroke="#ce93d8" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#as)"/>
+    <path d="M 68,298 L 68,308 L 392,308 L 392,302" fill="none" stroke="#ce93d8" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#as)"/>
+
+    <!-- iaChatGroq.py (IA Conversacional) -->
+    <rect x="175"  y="252" width="135" height="46" rx="7" fill="rgba(125,60,152,.2)"  stroke="#7d3c98" stroke-width="1.5"/>
+    <text x="242"  y="271" text-anchor="middle" fill="#ce93d8" font-size="11.5" font-family="sans-serif" font-weight="bold">iaChatGroq.py</text>
+    <text x="242"  y="287" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">Groq Llama 3.3</text>
+
+    <!-- iaPredictor.py (ML Predictivo) -->
+    <rect x="325"  y="252" width="135" height="46" rx="7" fill="rgba(156,92,254,.15)" stroke="#8e44ad" stroke-width="1.5"/>
+    <text x="392"  y="271" text-anchor="middle" fill="#ce93d8" font-size="11.5" font-family="sans-serif" font-weight="bold">iaPredictor.py</text>
+    <text x="392"  y="287" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">scikit-learn ML</text>
+
+    <!-- Conexiones IA → baseDatos (bordeando sin atravesar recuadros) -->
+    <path d="M 242,252 L 242,175 L 535,175 L 535,195" fill="none" stroke="#4dd0e1" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#as)"/>
+    <path d="M 392,252 L 392,223 L 464,223" fill="none" stroke="#4dd0e1" stroke-width="1.2" stroke-dasharray="3,3" marker-end="url(#as)"/>
+
+    <!-- baseDatos -->
+    <rect x="470" y="200" width="130" height="46" rx="7" fill="rgba(0,131,143,.3)"   stroke="#00838f" stroke-width="1.5"/>
+    <text x="535" y="219" text-anchor="middle" fill="#4dd0e1" font-size="11.5" font-family="sans-serif" font-weight="bold">baseDatos</text>
+    <text x="535" y="235" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">SQLite acuicola.db</text>
+    <!-- actuadores -->
+    <rect x="610" y="200" width="118" height="46" rx="7" fill="rgba(27,94,32,.3)"    stroke="#1b5e20" stroke-width="1.5"/>
+    <text x="669" y="219" text-anchor="middle" fill="#a5d6a7" font-size="11.5" font-family="sans-serif" font-weight="bold">Actuadores</text>
+    <text x="669" y="235" text-anchor="middle" fill="#888" font-size="9.5" font-family="sans-serif">splash · alarmas</text>
+    <!-- leyenda -->
+    <line x1="280" y1="315" x2="310" y2="315" stroke="#f29900" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="315" y="319" fill="#aaa" font-size="9.5" font-family="sans-serif">flujo MQTT (pub)</text>
+    <line x1="440" y1="315" x2="470" y2="315" stroke="rgba(255,255,255,.4)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#as)"/>
+    <text x="475" y="319" fill="#aaa" font-size="9.5" font-family="sans-serif">sub / lectura directa / consulta BD</text>
+  </svg>
+</section>
+
+<!-- ========================================== SECCIÓN 1: EDGE COMPUTING -->
+<section data-background-color="#001830">
+  <h1 style="color:var(--gold)">🖥️ Módulo 1</h1>
+  <p>Edge Computing en el Borde y Lógica de Procesamiento Local</p>
+</section>
+
+<!-- ========================================== CONCEPTO 1.1 ========================================== -->
+<section>
+  <h2>1.1 Suavizado de Ruido: Ventana Deslizante (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Por qué usar una cola circular dinámica en RAM es mejor práctica para suavizar ruido que almacenar en SQLite e interrogar a la base de datos local mediante consultas SQL en cada segundo?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 1.2 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>1.2 Suavizado de Ruido: Promedio Móvil</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Almacenar las últimas muestras en el búfer circular nos da el contexto histórico a corto plazo, pero ¿cómo convertimos esta serie de datos ruidosos en una única métrica estable y representativa?
+    </div>
+    <div class="block-core">
+      
+      Calculamos de forma secuencial la media aritmética de los elementos acumulados en la ventana deslizante. Esto aplana los picos instantáneos sin retrasar significativamente la respuesta del sistema:
+      <pre style="margin: 0.1em 0;"><code class="language-python">import statistics
+# El promedio móvil suaviza las fluctuaciones extremas de un sensor
+promedio_od = statistics.mean(ventanas["oxigeno"])</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>1.2 Suavizado de Ruido: Promedio Móvil (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      Si el docente aumenta el tamaño del buffer de N=5 a N=100 en un sensor real, ¿qué pasará con la estabilidad de la señal y qué problemas de latencia (retardo de alertas ante anoxia de peces) causaría?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 1.3 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>1.3 Detección de Anomalías Relativas</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      El promedio móvil es excelente para suavizar, pero si ocurre un cambio físico extremo y real (ej. se rompe el electrodo), la media tardará en reaccionar. ¿Cómo identificamos eventos extremos al instante?
+    </div>
+    <div class="block-core">
+      
+      Comparamos el valor crudo entrante directamente con la muestra previa. Si la variación porcentual relativa supera el <strong>20%</strong>, clasificamos el dato como anomalía y la reportamos inmediatamente, ignorando filtros de red:
+      <div style="background:rgba(0,0,0,0.3); padding:4px; border-radius:4px; font-family:monospace; margin: 0.2em 0; text-align:center;">
+        Cambio = |x<sub>crudo</sub> - x<sub>anterior</sub>| / x<sub>anterior</sub> &gt; 0.20
+      </div>
+      <pre style="margin: 0.1em 0;"><code class="language-python">if anterior > 0 and (abs(crudo - anterior) / anterior) > 0.20:
+    marcar_anomalia = True # Reporte de emergencia</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>1.3 Detección de Anomalías Relativas (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Por qué las anomalías deben ignorar cualquier filtro de ahorro de red y enviarse inmediatamente al nodo central en lugar de ser descartadas o esperar a la siguiente transmisión planificada?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 1.4 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>1.4 Filtro Delta: Optimización de Red</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Transmitir variables estables e idénticas cada 5 segundos al servidor central satura innecesariamente el ancho de banda. ¿Cómo decidimos localmente en el estanque qué datos vale la pena enviar?
+    </div>
+    <div class="block-core">
+      
+      Aplicamos un filtro delta con un umbral del <strong>5%</strong>. El nodo de borde solo publicará en el broker MQTT si la variación del promedio móvil actual difiere más del 5% respecto a la última muestra que fue transmitida:
+      <div style="background:rgba(0,0,0,0.3); padding:4px; border-radius:4px; font-family:monospace; margin: 0.2em 0; text-align:center;">
+        Variación = |&mu;<sub>actual</sub> - &mu;<sub>reportada</sub>| / &mu;<sub>reportada</sub> &gt; 0.05
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>1.4 Filtro Delta: Optimización de Red (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      Si las condiciones biológicas del estanque se mantienen en calma absoluta durante 6 horas, ¿cuál es el porcentaje de reducción en el volumen de datos de la red y su impacto en enlaces satelitales?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 1.5 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>1.5 Análisis de Tendencia Temporal</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Conocer el valor actual del oxígeno es crucial, pero predecir su dirección a corto plazo permite tomar acciones preventivas antes de que caiga bajo el umbral crítico.
+    </div>
+    <div class="block-core">
+      
+      El nodo de borde analiza el gradiente temporal dentro del búfer de memoria. Compara la muestra más reciente (<code class="mono">valores[-1]</code>) contra el registro histórico intermedio de la ventana (<code class="mono">valores[-3]</code>):
+      <pre style="margin: 0.1em 0;"><code class="language-python">if valores[-1] > valores[-3]: tendencia = "SUBIENDO"
+elif valores[-1] < valores[-3]: tendencia = "BAJANDO"
+else: tendencia = "ESTABLE"</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>1.5 Análisis de Tendencia Temporal (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      Si el oxígeno actual es 3.1 mg/L (cerca del límite de asfixia) pero la tendencia es "SUBIENDO", ¿cómo ayuda esta metadato al nodo central a evitar arranques en falso e innecesarios de los aireadores?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 1.6 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>1.6 Estructura de Payload Enriquecido</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      ¿Cómo estructuramos y comunicamos todo el procesamiento en el borde (promedio, tendencia, anomalía) de forma ligera, interoperable y estándar para otros sistemas?
+    </div>
+    <div class="block-core">
+      
+      Encapsulamos las métricas procesadas en un único objeto JSON estructurado y lo publicamos en el tópico de MQTT procesado: <code class="mono">sensores/procesado/estanque_a</code>:
+      <pre style="margin: 0.1em 0;"><code class="language-json">{
+  "idDispositivo": "estanque_a",
+  "temperatura": 28.08,
+  "oxigenoDisuelto": 5.06,
+  "tendenciaOD": "BAJANDO",
+  "anomalia": false
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>1.6 Estructura de Payload Enriquecido (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Por qué enriquecer el mensaje JSON desde el borde disminuye drásticamente el uso de CPU y el número de escrituras innecesarias en la base de datos del servidor principal?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 1.7 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>1.7 Cómputo en el Borde vs Nube</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      La nube ofrece capacidad de procesamiento infinita. Sin embargo, ¿es la mejor arquitectura técnica para la toma de decisiones y automatización de soporte vital en estanques remotos?
+    </div>
+    <div class="block-core">
+      
+      Comparamos el rendimiento y confiabilidad de ambas arquitecturas locales:
+      <table>
+        <thead>
+          <tr>
+            <th>Métrica de Control</th>
+            <th>🖥️ Edge Computing Local</th>
+            <th>☁️ Procesamiento en la Nube</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Latencia de Decisión</strong></td>
+            <td>Inmediata (&lt; 5 ms - WiFi/LAN local)</td>
+            <td>Retrasada (100 - 300 ms - Internet)</td>
+          </tr>
+          <tr>
+            <td><strong>Dependencia de Enlace</strong></td>
+            <td><strong>Offline:</strong> Sigue operando sin internet</td>
+            <td><strong>Absoluta:</strong> Si cae internet, se detiene</td>
+          </tr>
+          <tr>
+            <td><strong>Ancho de Banda</strong></td>
+            <td>Mínimo: -80% gracias al filtro delta</td>
+            <td>Alto: Requiere transmisión cruda continua</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>1.7 Cómputo en el Borde vs Nube (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      En una granja real, si ocurre una tormenta y cae la conexión a internet satelital por 4 horas, ¿qué ocurrirá con los peces si el algoritmo de control corre en AWS versus en el nodo Edge local?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 1.8 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>1.8 Computación Edge AI y Agentes IoT</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Tradicionalmente, los dispositivos IoT son nodos pasivos "tontos" que solo recopilan y envían datos crudos. ¿Cómo podemos transformar un microcontrolador local en un agente autónomo capaz de razonar y tomar decisiones complejas offline?
+    </div>
+    <div class="block-core">
+      
+      Plataformas de vanguardia como <strong>ESP-Claw</strong> de Espressif permiten ejecutar agentes de IA directamente en microcontroladores <strong>ESP32</strong>. Este framework combina un motor de inferencia local con un intérprete de scripts <strong>Lua</strong> asíncronos y asertivos, y soporta <strong>Model Context Protocol (MCP)</strong> para exponer el hardware (sensores y actuadores) como herramientas locales que los LLMs pueden invocar directamente en el borde.
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>1.8 Computación Edge AI y Agentes IoT (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Cómo cambia el paradigma al pasar de reglas estáticas rígidas (If-This-Then-That) a agentes locales autónomos basados en ESP-Claw que razonan de forma híbrida y exponen sus sensores como herramientas vía MCP?
+    </div>
+  </div>
+</section>
+
+
+<!-- ========================================== CONCEPTO 1.9 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>1.9 Ciclo de Vida del Dato Ubicuo</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Un dato de oxígeno nace en una reacción química de un sensor y muere encendiendo un motor eléctrico. ¿Cómo es el flujo completo asíncrono y ubicuo del dato?
+    </div>
+    <div class="block-core">
+      
+      El dato viaja de forma estructurada a través de tres etapas asíncronas:
+      <ol style="margin-left: 1.2em;">
+        <li><strong>Ingesta (miSensor):</strong> Captura, digitaliza y publica al broker MQTT en QoS 0.</li>
+        <li><strong>Procesamiento (nodoEdge):</strong> Suaviza la serie, calcula tendencias y aplica filtros delta.</li>
+        <li><strong>Control (nodoCentral):</strong> Valida reglas biológicas, guarda en base de datos SQLite y manda comandos QoS 1.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>1.9 Ciclo de Vida del Dato Ubicuo (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿En cuál de estas 3 fases del ciclo de vida del dato se debe aplicar el descarte e invalidación de lecturas para proteger la red de comunicaciones móviles de la granja?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 1.10 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>1.10 Green IoT & Sostenibilidad</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Los sensores de campo operan con paneles solares y baterías químicas pequeñas. Las transmisiones de radio de red drena la energía de forma veloz. ¿Cómo extendemos la vida útil del hardware?
+    </div>
+    <div class="block-core">
+      
+      Al implementar el software de filtrado asíncrono en `nodoEdge.py`, evitamos transmitir el <strong>80% de los datos redundantes</strong>. Esto permite apagar el transceptor de radio de alta potencia y ponerlo en modo de reposo (*sleep*), disminuyendo drásticamente el consumo de corriente.
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>1.10 Green IoT & Sostenibilidad (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      La batería física del sensor pasa de durar 1.5 años a más de 6 años. ¿Por qué el software inteligente en el borde es más ecológico y barato que colocar baterías químicas más grandes en el campo?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SECCIÓN 2: INTELIGENCIA ARTIFICIAL -->
+<section data-background-color="#1A0A2E">
+  <h1 style="color:#A855F7">🤖 Módulo 2</h1>
+  <p>Inteligencia Artificial: LLMs Conversacionales, APIs en la Nube y ML Predictivo</p>
+</section>
+
+<!-- ========================================== CONCEPTO 2.1 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.1 ¿Qué es la IA Generativa de Lenguaje?</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      ¿Cómo es posible que una máquina comprenda preguntas en lenguaje natural humano, infiera intenciones técnicas y responda de forma fluida y gramaticalmente correcta?
+    </div>
+    <div class="block-core">
+      
+      Los Grandes Modelos de Lenguaje (LLMs) son redes neuronales masivas basadas en la arquitectura <strong>Transformer</strong>, entrenadas de manera auto-supervisada con corpus de texto masivos para predecir y modelar la representación semántica del lenguaje.
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.1 ¿Qué es la IA Generativa de Lenguaje? (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Cuál es la diferencia cognitiva entre un software clásico basado en un árbol de decisión rígido y un modelo generativo entrenado con pesos continuos?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.2 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.2 Completado Probabilístico</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      La ilusión de la conciencia: Un modelo lingüístico no "piensa" en el sentido biológico, ni consulta bases de datos estáticas cuando responde. ¿Cuál es el motor matemático de su escritura?
+    </div>
+    <div class="block-core">
+      
+      Un LLM predice de forma recursiva la probabilidad del siguiente <strong>token</strong> (trozo de palabra) basándose en la secuencia previa. Calcula la distribución de probabilidad acumulada softmax:
+      <pre style="margin: 0.1em 0;"><code class="language-bash"># Entrada: "El oxígeno disuelto está..."
+# Candidatos: "bajo" (78%), "alto" (21%), "volando" (0.01%)</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.2 Completado Probabilístico (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      Si la generación es probabilística, ¿por qué es crítico forzar un muestreo determinista en aplicaciones de diagnóstico técnico acuícola?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.3 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.3 Ecuación de Auto-Atención (Self-Attention)</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      En oraciones largas, las palabras relacionadas pueden estar muy separadas (ej. "Los aireadores que el técnico reparó la semana pasada <strong>fallaron</strong>"). ¿Cómo mantiene la red la relación semántica sin colapsar?
+    </div>
+    <div class="block-core">
+      
+      La auto-atención asocia cada token con tres vectores dinámicos: <strong>Query (Q)</strong>, <strong>Key (K)</strong> y <strong>Value (V)</strong>. Calcula la relevancia cruzada de todos los tokens simultáneamente en paralelo:
+      <div style="background:rgba(0,0,0,0.3); padding:4px; border-radius:4px; font-family:monospace; margin: 0.2em 0; text-align:center; font-size: 1.15em;">
+        Attention(Q, K, V) = softmax( (Q &middot; K<sup>T</sup>) / &radic;d<sub>k</sub> ) &middot; V
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.3 Ecuación de Auto-Atención (Self-Attention) (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Por qué la auto-atención paralela destronó a las redes neuronales recurrentes clásicas (LSTMs) que leían el texto de forma lenta y secuencial?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.4 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.4 Tokenización y Algoritmo BPE</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Las redes neuronales solo entienden números continuos, no caracteres alfabéticos. ¿Cómo dividimos el lenguaje para que la IA lo procese?
+    </div>
+    <div class="block-core">
+      
+      El algoritmo de compresión BPE (Byte Pair Encoding) descompone las palabras comunes en tokens únicos y las raras en sub-palabras de su vocabulario estático:
+      <pre style="margin: 0.1em 0;"><code class="language-bash">"oxígeno" -> ["oxí", "geno"] -> IDs de vocabulario: [4501, 8932]
+"peces" -> ["peces"] -> ID de vocabulario: [12903]</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.4 Tokenización y Algoritmo BPE (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      Dado que el español tiene tildes y caracteres morfológicos raros en el entrenamiento original, ¿por qué consume más tokens y cuesta más dinero en APIs que el mismo texto en inglés?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.5 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.5 Embeddings Vectoriales Multidimensionales</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Convertir el texto en números (IDs de tokens) es necesario, pero ¿cómo sabe la red neuronal que "anoxia" está relacionada conceptualmente con "asfixia" y "oxígeno"?
+    </div>
+    <div class="block-core">
+      
+      Cada token ID se proyecta a un espacio geométrico de alta dimensión (ej. <strong>4096</strong> dimensiones en Llama 3) mediante una matriz de pesos continuos. Los conceptos semánticamente cercanos están agrupados geométricamente:
+      <div style="background:rgba(0,0,0,0.3); padding:4px; border-radius:4px; font-family:monospace; margin: 0.2em 0; text-align:center;">
+        SimilitudCoseno(v<sub>oxígeno</sub>, v<sub>anoxia</sub>) &asymp; 0.94
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.5 Embeddings Vectoriales Multidimensionales (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      En embeddings vectoriales se cumple: "Rey" - "Hombre" + "Mujer" = "Reina". ¿Cómo aplicarías esta lógica para correlacionar "Temperatura" y "Oxígeno Disuelto" en estanques?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.6 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.6 La Ventana de Contexto</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Así como los seres humanos tenemos una memoria a corto plazo físicamente limitada, las Inteligencias Artificiales tienen una barrera física de retención en su atención.
+    </div>
+    <div class="block-core">
+      
+      La ventana de contexto es la <strong>cantidad máxima de tokens</strong> que el modelo puede procesar en una sola interacción (pregunta + historial + respuesta). Llama 3.3 Versatile en Groq ofrece una ventana gigante de hasta <strong>128,000 tokens</strong>.
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.6 La Ventana de Contexto (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      Si construyes un asistente IoT y decides enviarle todas las lecturas de los sensores del último mes en un único prompt de chat, ¿cuál es el riesgo técnico respecto al colapso del contexto?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.7 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.7 Simulación de Memoria (Stateless LLMs)</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Las APIs de LLMs son "stateless" (no tienen estado): no recuerdan la pregunta que hiciste hace 5 segundos. ¿Cómo programamos para que la IA simule tener memoria conversacional?
+    </div>
+    <div class="block-core">
+      
+      El chatbot de Python debe persistir una lista con el historial de mensajes en memoria o SQLite, y <strong>volver a concatenar y reenviar todo el historial</strong> en cada llamada HTTP a la API de Groq:
+      <pre style="margin: 0.1em 0;"><code class="language-python"># Payload enviado a la API de Groq
+payload = [
+    {"role": "system", "content": system_prompt},
+    {"role": "user", "content": "Pregunta 1"},
+    {"role": "assistant", "content": "Respuesta 1"},
+    {"role": "user", "content": "Pregunta actual"}
+]</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.7 Simulación de Memoria (Stateless LLMs) (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Cómo afecta el reenvío de conversaciones extremadamente largas (historial acumulado de 100 mensajes) al coste de la API de pago y al tiempo de respuesta (latencia)?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.8 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.8 Hiperparámetro: Temperature</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      ¿Cómo regulamos de forma precisa si queremos que la IA sea extremadamente predecible y estricta en sus diagnósticos o variada y "creativa" al redactar recomendaciones?
+    </div>
+    <div class="block-core">
+      
+      La <strong>temperatura</strong> (de 0.0 a 2.0) altera la distribución probabilística de tokens.
+      - <strong>Valores bajos (0.0 a 0.3):</strong> Aplasta las opciones raras y elige solo el token de máxima probabilidad (lógica pura).
+      - <strong>Valores altos (0.7 a 1.2):</strong> Nivela las probabilidades, permitiendo elecciones imprevistas (creatividad).
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.8 Hiperparámetro: Temperature (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      Si configuras la temperatura del chatbot IoT en 1.8 en un estanque real de cultivo, ¿cuál es el peligro técnico de que invente diagnósticos críticos de oxígeno?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.9 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.9 Hiperparámetro: Top_p</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Limitar la aleatoriedad es vital. ¿Cómo evitamos que el LLM elija palabras ridículas o incoherentes si la temperatura no es cero?
+    </div>
+    <div class="block-core">
+      
+      El muestreo de núcleo (<strong>Top_p</strong>) limita las palabras consideradas al percentil de probabilidad acumulada que seleccionemos (ej. <strong>0.90</strong> o 90%). Ignora por completo el 10% de tokens más descabellados del vocabulario.
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.9 Hiperparámetro: Top_p (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Por qué los proveedores oficiales de APIs (Groq, OpenAI) recomiendan de forma estricta modificar Temperature o Top_p, pero nunca ambos parámetros al mismo tiempo?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.10 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.10 ¿Qué son los Parámetros (Billion)?</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Cuando compramos o seleccionamos modelos vemos términos como Llama 3.1 8B o Llama 3.3 70B. ¿Qué significa exactamente esa "B" de *Billion* y qué representa?
+    </div>
+    <div class="block-core">
+      
+      Son los <strong>coeficientes numéricos</strong> (pesos <em>w</em> y sesgos <em>b</em>) que actúan como la fuerza de las conexiones sinápticas artificiales en la red. En Llama 70B, existen 70 mil millones de pesos flotantes que se leen en cada inferencia.
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.10 ¿Qué son los Parámetros (Billion)? (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      Un modelo de 70B tiene mayor raciocinio lógico y matemático que uno de 8B. ¿Por qué en la práctica técnica hospedar un modelo de 70B de forma local requiere GPUs caras y masivas?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.11 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.11 Modelos Propietarios vs Libres (Open Weights)</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      ¿Debemos enviar obligatoriamente nuestros datos industriales a APIs comerciales de terceros o es posible descargar e implementar nuestro propio cerebro de IA local de forma gratuita?
+    </div>
+    <div class="block-core">
+      
+      - <strong>Propietarios (GPT-4o, Claude 3.5):</strong> De pago por token, controlados detrás de APIs privadas. Privacidad nula de datos.
+      - <strong>Libres / Pesos Abiertos (Llama 3.3 70B, Mistral):</strong> El código y los pesos matemáticos del silicio son descargables de forma libre. Puedes correrlos gratis y con privacidad total en tus propios servidores locales.
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.11 Modelos Propietarios vs Libres (Open Weights) (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      Si una granja de truchas se encuentra en una zona rural andina con cortes de internet frecuentes, ¿cuál de estos dos esquemas de IA garantiza la soberanía del sistema de control?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.12 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.12 Modelos de Frontera vs Ligeros</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      ¿Necesitamos siempre el modelo más gigante e inteligente de internet para resolver cualquier tarea de categorización o procesamiento simple en sensores?
+    </div>
+    <div class="block-core">
+      
+      - <strong>Frontera / SOTA (70B a 400B+):</strong> Llama 3.3 70B, GPT-4. Habilidades avanzadas de razonamiento lógico y programación.
+      - <strong>Modelos Ligeros (1B a 8B):</strong> Llama 3.1 8B, Qwen 2B. Ultra-rápidos, consumen poca VRAM, son ideales para correr localmente en dispositivos compactos.
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.12 Modelos de Frontera vs Ligeros (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Por qué un modelo ligero (ej. Llama 8B) es el candidato ideal para integrarse en un nodo Edge Computing físico y offline ubicado en los estanques?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.13 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.13 La Revolución de la LPU de Groq</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Las GPUs son lentas en inferencia secuencial de texto debido al cuello de botella de transferencia de memoria ("Memory Wall"). ¿Existe silicio diseñado solo para lenguaje?
+    </div>
+    <div class="block-core">
+      
+      La <strong>LPU</strong> (Language Processing Unit) de Groq elimina la memoria externa y coloca <strong>on-chip SRAM ultra-rápida</strong> en el procesador. Con una arquitectura determinista planificada por compilador, procesa a velocidades extremas de <strong>500+ tokens/segundo</strong>.
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.13 La Revolución de la LPU de Groq (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Cómo transforma la velocidad instantánea de una LPU la UX (experiencia del usuario) en un bot conversacional que interactúa en tiempo real con operarios en campo?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.14 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.14 Carga Segura de API Keys (.env)</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      La seguridad informática es crítica: Si quemas tu credencial secreta <code class="mono">GROQ_API_KEY</code> directo en tu código de Python, los bots de scraping la robarán en segundos al subirla a un repositorio público.
+    </div>
+    <div class="block-core">
+      
+      Almacenamos los tokens en el archivo oculto local `.env` (declarado en `.gitignore`) y usamos la biblioteca `dotenv` de Python para cargarlo dinámicamente de forma exclusiva a memoria RAM al arrancar el script:
+      <pre style="margin: 0.1em 0;"><code class="language-python">import os
+from dotenv import load_dotenv
+load_dotenv() # Lee el archivo .env local
+api_key = os.getenv("GROQ_API_KEY")</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.14 Carga Segura de API Keys (.env) (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      Si un bot detecta una API Key expuesta en un commit público de GitHub, ¿por qué los proveedores (Groq, OpenAI) revocan e invalidan la llave automáticamente a los pocos segundos?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.15 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.15 Fundamentos: ¿Qué es un Modelo Predictivo?</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      En ingeniería, los sistemas tradicionales operan bajo reglas estáticas (IF/THEN). Sin embargo, ante dinámicas complejas y cambiantes (como el ecosistema de un estanque), necesitamos estimar el futuro o clasificar estados basándonos en datos históricos y no en suposiciones fijas.
+    </div>
+    <div class="block-core">
+      
+      Un <strong>modelo predictivo</strong> es una función matemática:
+      <div style="background:rgba(0,0,0,0.3); padding:4px; border-radius:4px; font-family:monospace; margin: 0.2em 0; text-align:center; font-size:1.1em;">
+        y = f(x) + e
+      </div>
+      Mapea un conjunto de variables de entrada llamadas <strong>características (features, x)</strong> hacia una variable de salida llamada <strong>objetivo (target, y)</strong>, donde <em>e</em> es el error residual. El modelo "aprende" esta función durante una fase de entrenamiento.
+      <ul style="margin-left: 1.1em; margin-top: 0.3em; font-size: 0.9em;">
+        <li><strong>Entradas (x):</strong> Timestamp, lecturas previas de Oxígeno, Temp, pH.</li>
+        <li><strong>Salida (y):</strong> Oxígeno disuelto proyectado a 30 minutos.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.15 Fundamentos: ¿Qué es un Modelo Predictivo? (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      Para un ingeniero de sistemas, ¿por qué es fundamental diferenciar un algoritmo tradicional determinista (donde las reglas se programan a mano) de un modelo de Machine Learning (donde las reglas se descubren a partir de los datos)?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.16 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.16 Taxonomía Predictiva: Regresión vs Clasificación</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Los problemas de predicción no son todos iguales. Un sensor puede fallar de golpe, o la calidad del agua puede degradarse lentamente. ¿Cómo decide un ingeniero qué enfoque matemático y qué tipo de modelo predictivo aplicar?
+    </div>
+    <div class="block-core">
+      
+      Los problemas de aprendizaje supervisado en ingeniería se dividen principalmente en dos familias según la naturaleza de la variable objetivo (y):
+      <ol style="margin-left: 1.2em; font-size: 0.95em;">
+        <li style="margin-bottom: 0.2em;"><strong>Regresión (Predicción Continua):</strong> Cuando la salida (y) es un valor numérico real y continuo (ej. Predecir que el nivel de oxígeno será exactamente <code>3.25 mg/L</code> dentro de 30 minutos).</li>
+        <li><strong>Clasificación (Predicción Categórica):</strong> Cuando la salida (y) es una etiqueta o clase discreta (ej. Clasificar si el sensor está en estado <code>NORMAL</code> o <code>ANOMALÍA</code>, o si habrá <code>MORTALIDAD</code> o <code>SUPERVIVENCIA</code>).</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.16 Taxonomía Predictiva: Regresión vs Clasificación (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      Si debes diseñar un sistema inteligente para controlar el encendido automático de los aireadores, ¿emplearías un enfoque de Regresión o uno de Clasificación? Justifica tu decisión desde la perspectiva de eficiencia de control.
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.17 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.17 ML Predictivo: Regresión Lineal</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      ¿Cómo calculamos matemáticamente la proyección a futuro de las variables críticas de agua del estanque (oxígeno disuelto) basándonos en los datos históricos reales almacenados en SQLite?
+    </div>
+    <div class="block-core">
+      
+      Entrenamos localmente un predictor de Regresión Lineal de `scikit-learn` en Python, ajustando la pendiente (peso <em>w</em>) y el intercepto (sesgo <em>b</em>) minimizando el error cuadrático residual:
+      <div style="background:rgba(0,0,0,0.3); padding:4px; border-radius:4px; font-family:monospace; margin: 0.2em 0; text-align:center;">
+        ŷ = w &middot; x + b
+      </div>
+      <pre style="margin: 0.15em 0;"><code class="language-python">from sklearn.linear_model import LinearRegression
+modelo = LinearRegression()
+modelo.fit(X_entrenamiento, y_lecturas)</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.17 ML Predictivo: Regresión Lineal (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      Si entrenamos un predictor lineal local con lecturas aleatorias simuladas de "miSensor.py", ¿por qué la predicción proyectará una línea plana con muy baja confianza matemática?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.18 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.18 StandardScaler: Estandarización de Datos</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      El tiempo (los timestamps de las lecturas) es una variable escalar que crece continuamente hacia el infinito. Esto genera inestabilidad numérica extrema al optimizar matrices de Machine Learning.
+    </div>
+    <div class="block-core">
+      
+      Aplicamos <code class="mono">StandardScaler</code> de `scikit-learn` para normalizar los vectores del dataset temporal a media cero (&mu; = 0) y desviación estándar uno (&sigma; = 1):
+      <div style="background:rgba(0,0,0,0.3); padding:4px; border-radius:4px; font-family:monospace; margin: 0.2em 0; text-align:center;">
+        z = (x - &mu;) / &sigma;
+      </div>
+      <pre style="margin: 0.1em 0;"><code class="language-python">from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+X_escalado = scaler.fit_transform(X_tiempo)</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.18 StandardScaler: Estandarización de Datos (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Qué problemas matemáticos de desbordamiento de memoria ocurrirían al entrenar predicciones lineales tras 4 días de lecturas de sensores ininterrumpidas sin escalador?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.19 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.19 Coeficiente de Determinación R2</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      No podemos alertar al operario basándonos en predicciones erróneas. ¿Cómo evaluamos de forma matemática si el modelo lineal predictivo entrenado es confiable?
+    </div>
+    <div class="block-core">
+      
+      Calculamos el coeficiente R<sup>2</sup>, el cual compara los residuos al cuadrado de la regresión lineal (SS<sub>res</sub>) contra la varianza natural de los datos reales (SS<sub>tot</sub>). Rango de -&infin; a 1.0:
+      <div style="background:rgba(0,0,0,0.3); padding:4px; border-radius:4px; font-family:monospace; margin: 0.2em 0; text-align:center; font-size: 1.15em;">
+        R<sup>2</sup> = 1 - (&Sigma;(y<sub>i</sub> - ŷ<sub>i</sub>)<sup>2</sup> / &Sigma;(y<sub>i</sub> - ȳ)<sup>2</sup>)
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.19 Coeficiente de Determinación R2 (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Por qué con datos estables reales el R² se acerca a 1.0, mientras que al usar simuladores ruidosos da un valor cercano a cero o negativo indicando que es mejor predecir usando solo la media constante?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.20 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.20 Alertas Proactivas en Segundo Plano</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      El chatbot conversacional responde cuando el operario pregunta de forma explícita. Sin embargo, ¿cómo logramos que el sistema vigile de forma autónoma y envíe alertas de emergencia a Telegram de forma proactiva?
+    </div>
+    <div class="block-core">
+      
+      Instanciamos un hilo demonio (<strong>daemon thread</strong>) en segundo plano que corre de forma de bucle infinito. Cada 60 segundos lee el histórico SQLite, entrena el predictor ML, evalúa el nivel de riesgo y envía notificaciones push directas:
+      <pre style="margin: 0.1em 0;"><code class="language-python">import threading
+hilo_alertas = threading.Thread(target=bucle_vigilancia_ia, daemon=True)
+hilo_alertas.start() # Corre paralelo sin bloquear el chatbot principal</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.20 Alertas Proactivas en Segundo Plano (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Por qué el hilo de vigilancia debe iniciarse obligatoriamente con "daemon=True" para garantizar un cierre limpio y controlado de todo el software IoT acuícola?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.21 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.21 Prompt Engineering Avanzado</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      ¿Cómo estructuramos las directrices del modelo de lenguaje para obligarlo a seguir protocolos biológicos estrictos y evitar respuestas vagas, conversacionales o imprecisas?
+    </div>
+    <div class="block-core">
+      
+      Aplicamos técnicas avanzadas de inyección de directrices en el `System Prompt` del chatbot:
+      - <strong>Few-Shot Prompting:</strong> Proveemos ejemplos concretos de entradas y salidas estructuradas técnicas.
+      - <strong>Chain of Thought (CoT):</strong> Forzamos el razonamiento explícito y secuencial en pasos ordenados:
+      <pre style="margin:0;"><code class="language-python">prompt_sistema = "Analiza paso a paso: 1. Revisa si OD < 3.0. 2. Explica y asocia con Temp. 3. Responde en 3 líneas."</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.21 Prompt Engineering Avanzado (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      Si pides a la IA que diagnostique un estanque, ¿cómo ayuda Few-Shot a garantizar que devuelva siempre un JSON estructurado en lugar de párrafos libres?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.22 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.22 Arquitectura RAG en Tiempo Real</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Groq y Llama 3.3 fueron entrenados con internet histórico hasta su fecha de corte. <strong>No tienen idea</strong> de cuál es el nivel de oxígeno de tu estanque en este instante. ¿Cómo le damos ojos en tiempo real?
+    </div>
+    <div class="block-core">
+      
+      La arquitectura <strong>RAG</strong> (Retrieval-Augmented Generation) inyecta contexto en tres fases:
+      <ol style="margin-left: 1.2em;">
+        <li><strong>Recuperación (Retrieval):</strong> Python consulta a la base de datos SQLite las últimas 10 lecturas.</li>
+        <li><strong>Aumentación (Augmentation):</strong> El script de Python inyecta los datos como texto formateado en el prompt de la llamada.</li>
+        <li><strong>Generación (Generation):</strong> Groq procesa los datos reales y genera la respuesta contextualizada.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.22 Arquitectura RAG en Tiempo Real (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Por qué utilizar RAG es infinitamente más rápido, barato y mantenible en entornos industriales que intentar realizar un reentrenamiento (fine-tuning) continuo del modelo lingüístico?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== CONCEPTO 2.23 ========================================== -->
+<!-- SPLIT SLIDE A -->
+<section>
+  <h2>2.23 Capas de Blindaje de Sistemas Críticos</h2>
+  <div class="block-container">
+    <div class="block-context">
+      
+      Los LLMs son probabilísticos y propensos a "alucinar" (inventar mentiras convincentes). En un cultivo real de tilapias, alucinar lecturas falsas causaría la muerte masiva de peces. ¿Cómo blindamos el sistema?
+    </div>
+    <div class="block-core">
+      
+      Estructuramos un blindaje en tres niveles:
+      <ol style="margin-left: 1.2em;">
+        <li><strong>Hiperparámetro:</strong> Temperatura ultra-baja (0.1) para forzar respuestas estrictamente deterministas.</li>
+        <li><strong>System Prompt:</strong> Instrucciones estrictas de grounding (*"Si el dato no está en el contexto provisto, responde que lo desconoces. Jamás inventes"*).</li>
+        <li><strong>Guardrail de Software:</strong> La activación física del relevador del aireador <strong>nunca se delega a la IA</strong>. La maneja el código tradicional de `nodoCentral.py`. La IA asesora; el software tradicional controla.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT SLIDE B -->
+<section>
+  <h2>2.23 Capas de Blindaje de Sistemas Críticos (Análisis)</h2>
+  <div class="block-container">
+    <div class="block-reflection">
+      
+      ¿Por qué bajo ningún concepto de diseño o automatización industrial se debe delegar la decisión de control directo de hardware crítico a un modelo lingüístico probabilístico?
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== EVALUACIÓN Y SOPORTE -->
+<section data-background-color="#0a2e12">
+  <h1 style="color:var(--gold)">🎓 Actividad EA4</h1>
+  <p>Evidencia de Aprendizaje EA4, Rúbrica y Guía de Soporte Técnico</p>
+</section>
+
+<section>
+  <h2>Evidencia EA4: Objetivos e Instrucciones</h2>
+  <div class="grid2">
+    <div class="box box-blue" style="font-size: 0.8em; line-height: 1.4;">
+      <h3 style="color: var(--iud2);">🎯 Objetivo de la Evidencia</h3>
+      <p style="margin-bottom: 0.3em;">Integrar y evaluar un sistema IoT distribuido bajo el modelo de computación ubicua, empleando broker MQTT Mosquitto, reglas con histéresis en nodoCentral, almacenamiento en SQLite, chatbot interactivo en Telegram con Groq API (Llama 3.3 70B) y panel web en Streamlit.</p>
+      <p>Comprobar la bidireccionalidad de la red y el procesamiento en el borde.</p>
+    </div>
+    <div class="box box-gold" style="font-size: 0.8em; line-height: 1.4;">
+      <h3 style="color: var(--gold);">📝 Instrucciones Clave</h3>
+      <ul style="margin-left: 1.1em;">
+        <li>Retomar módulos y base del sistema desarrollados previamente.</li>
+        <li>Presentar la evidencia en parejas (los grupos de entregas anteriores).</li>
+        <li>Asegurar que el orquestador <code>lanzador.py</code> inicie y supervise todos los subprocesos de manera thread-safe.</li>
+        <li>Verificar los flujos asíncronos y la persistencia de datos históricos en la base de datos local SQLite.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Entregables Requeridos para EA4</h2>
+  <div class="grid2">
+    <div class="box box-blue" style="font-size: 0.8em; line-height: 1.35;">
+      <h3 style="color: var(--iud2);">📦 1. Código Fuente y 2. Video Demostrativo</h3>
+      <p><strong>Código Fuente (.zip):</strong> Todo el sistema estructurado, con docstrings, comentarios explicativos detallados y el archivo <code>requisitos.txt</code>.</p>
+      <p style="margin-top: 0.3em;"><strong>Video Demostrativo (Máx 3 min):</strong> Grabado con cámara de los integrantes visible y compartiendo pantalla. Todos deben explicar una sección. Mostrar el arranque simultáneo, uso del dashboard, consultas y control en Telegram, disparo de alertas automáticas y registros en SQLite.</p>
+    </div>
+    <div class="box box-purple" style="font-size: 0.8em; line-height: 1.35; border-left: 4px solid #8e44ad;">
+      <h3 style="color: #ce93d8;">📄 3. Informe IEEE y 4. Presentación</h3>
+      <p><strong>Informe IEEE (Mín 3 pág):</strong> Documento formal con formato estándar IEEE de 2 columnas, texto justificado, Times New Roman 10pt. Debe incluir: Introducción, Arquitectura del sistema con diagramas de bloques, Detalles de la implementación del borde e IA, Tabla de casos de prueba y Conclusiones.</p>
+      <p style="margin-top: 0.3em;"><strong>Diapositivas:</strong> Diagrama de red, tabla de umbrales y reglas, comandos de Telegram y capturas de pantalla o GIFs demostrativos.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Rúbrica Oficial de Evaluación EA4</h2>
+  <div class="table-wrap">
+    <table style="font-size: 0.8em; width: 100%;">
+      <thead>
+        <tr>
+          <th>Criterio Evaluado</th>
+          <th>Insuficiente (0%)</th>
+          <th>Básico (50%)</th>
+          <th>Sobresaliente (100%)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>IA Predictiva (/prediccion)</strong></td>
+          <td>No responde o lanza error de conexión.</td>
+          <td>Responde pero sin mostrar confianza R² ni clasificar riesgo.</td>
+          <td>Muestra OD proyectado a 30 min, clasifica riesgo (normal/critico) y R² de confianza.</td>
+        </tr>
+        <tr>
+          <td><strong>Alertas Proactivas IA</strong></td>
+          <td>No existe hilo demonio o no se reciben las alertas.</td>
+          <td>El bot satura al usuario enviando alertas periódicas sin cooldown ni filtros.</td>
+          <td>Hilo demonio periódico con alertas automatizadas solo ante ADVERTENCIA/CRITICO y antispam.</td>
+        </tr>
+        <tr>
+          <td><strong>Ventana Deslizante (Edge)</strong></td>
+          <td>No implementada o causa desbordamiento.</td>
+          <td>Mantiene la serie temporal pero sin usar deques de tamaño circular fijo.</td>
+          <td>Uso de <code>collections.deque(maxlen=5)</code> thread-safe y optimizado en memoria.</td>
+        </tr>
+        <tr>
+          <td><strong>Filtro Delta y Reducción</strong></td>
+          <td>Reenvía todas las lecturas crudas.</td>
+          <td>Implementa el filtro de cambio pero con lógica o porcentajes incorrectos.</td>
+          <td>Solo publica si el cambio supera el 5% o hay anomalías. Tasa de reducción >80% en log.</td>
+        </tr>
+        <tr>
+          <td><strong>Tendencia OD en Borde</strong></td>
+          <td>No calcula la tendencia del oxígeno.</td>
+          <td>Muestra la tendencia con solo 2 estados o sin histórico de seguridad.</td>
+          <td>Muestra 3 estados (SUBIENDO/BAJANDO/ESTABLE) comparando posiciones [-1] vs [-3].</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Errores Comunes y Soluciones</h2>
+  <div class="table-wrap">
+    <table style="font-size: 0.8em; width: 100%;">
+      <thead>
+        <tr>
+          <th>Error / Excepción</th>
+          <th>Causa Probable</th>
+          <th>Solución Técnica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code style="color:#ef9a9a;">ConnectionRefusedError</code></td>
+          <td>El servicio del broker MQTT Mosquitto no está activo localmente.</td>
+          <td>Iniciar Mosquitto en powershell: <code>net start mosquitto</code> o <code>mosquitto -v</code>.</td>
+        </tr>
+        <tr>
+          <td><code style="color:#ef9a9a;">ModuleNotFoundError: 'groq' / 'sklearn'</code></td>
+          <td>Faltan paquetes necesarios en el entorno de Python actual.</td>
+          <td>Instalar dependencias: <code>pip install groq scikit-learn numpy</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>El bot de Telegram no responde</strong></td>
+          <td>Token incorrecto o no se ha iniciado el loop de polling.</td>
+          <td>Verificar el <code>TELEGRAM_TOKEN</code> en <code>.env</code> y confirmar que corre el chatbot.</td>
+        </tr>
+        <tr>
+          <td><code style="color:#ffcc80;">"Datos insuficientes para predecir"</code></td>
+          <td>La base de datos SQLite tiene menos de 10 muestras históricas.</td>
+          <td>Mantener encendido el script <code>miSensor.py</code> durante un minuto para poblar la BD.</td>
+        </tr>
+        <tr>
+          <td><strong>Falta la llave de Groq API</strong></td>
+          <td>La variable <code>GROQ_API_KEY</code> está vacía o mal escrita en <code>.env</code>.</td>
+          <td>Registrar una clave gratis en console.groq.com y agregarla al archivo <code>.env</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Conflicto de Puertos (1883 / 8501)</strong></td>
+          <td>Otras instancias del broker o Streamlit se están ejecutando en paralelo.</td>
+          <td>Cerrar procesos colgados o verificar puertos con <code>netstat -an | findstr 1883</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Checklist de Arranque y Comandos Útiles</h2>
+  <div class="grid2">
+    <div class="box box-green" style="font-size: 0.8em; line-height: 1.35;">
+      <h3 style="color: var(--green);">☐ Checklist de Verificación</h3>
+      <ul style="margin-left: 1.1em; list-style-type: none;">
+        <li>☐ <code>mosquitto -v</code> corre en el puerto 1883 sin errores.</li>
+        <li>☐ El archivo <code>.env</code> está completo con los tokens y claves de IA.</li>
+        <li>☐ Todas las dependencias de Python están instaladas en el virtualenv.</li>
+        <li>☐ El script <code>lanzador.py</code> inicia los módulos completados de manera paralela.</li>
+        <li>☐ Streamlit expone el dashboard web en el puerto 8501.</li>
+        <li>☐ El bot responde comandos interactivos y lenguaje natural.</li>
+      </ul>
+    </div>
+    <div class="box box-blue" style="font-size: 0.8em; line-height: 1.35;">
+      <h3 style="color: var(--iud2);">🛠️ Comandos de Terminal Útiles</h3>
+      <p style="margin-bottom: 0.3em;"><strong>Monitoreo de todos los tópicos MQTT en tiempo real:</strong></p>
+      <div class="term" style="margin: 0.1em 0; font-size: 0.8em;"><span class="cm">mosquitto_sub -h localhost -t "#" -v</span></div>
+      <p style="margin-top: 0.4em; margin-bottom: 0.3em;"><strong>Consulta rápida del número de lecturas en SQLite:</strong></p>
+      <pre style="margin: 0; font-size: 0.8em;"><code class="language-bash">python -c "import sqlite3, configBase; c=sqlite3.connect(configBase.RUTA_BD); print(c.execute('SELECT COUNT(*) FROM lecturas').fetchone())"</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== SLIDE: CIERRE -->
+<section data-background-gradient="linear-gradient(135deg,#001a4d 0%,#003DA5 60%,#00AEEF 100%)">
+  <h1 style="color:#A8D8A8">¡Felicidades! 🎉</h1>
+  <p style="font-size:1.1em; text-align: left;">Has integrado un sistema IoT completo y robusto:</p>
+  <div class="grid3" style="margin:1em 0; font-size: 0.8em;">
+    <div class="box" style="background:rgba(255,255,255,.1)">🖥️ <strong>Edge Computing</strong><br/><small>Ventana móvil, delta filter y detección de anomalías locales.</small></div>
+    <div class="box" style="background:rgba(255,255,255,.1)">📊 <strong>ML Predictivo</strong><br/><small>Regresión lineal en SQLite para alertas de riesgo proactivas.</small></div>
+    <div class="box" style="background:rgba(255,255,255,.1)">💬 <strong>IA Conversacional</strong><br/><small>Groq API + Llama 3.3 70B respondiendo en lenguaje natural.</small></div>
+  </div>
+  <p class="sub" style="text-align: center; margin-top: 1.2em;">
+    🎓 Tecnologías Emergentes — Proyecto de Monitoreo IoT Acuícola Finalizado.
+  </p>
+</section>
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+Reveal.initialize({
+  width: 1150,
+  height: 750,
+  margin: 0.05,
+  hash: true,
+  slideNumber: 'c/t',
+  transition: 'slide',
+  transitionSpeed: 'fast',
+  plugins: [RevealHighlight, RevealNotes],
+  highlight: { highlightOnLoad: true },
+});
+</script>
+</body>
+</html>

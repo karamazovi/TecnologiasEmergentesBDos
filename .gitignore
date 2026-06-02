@@ -1,0 +1,24 @@
+# Credenciales — NUNCA subir
+.env
+
+# Base de datos local
+*.db
+*.db-shm
+*.db-wal
+
+# Entorno virtual Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos temporales
+*.txt.bak
+edge_out.txt
+edge_err.txt
+
+# IDEs
+.vscode/
+.idea/
+*.swp
